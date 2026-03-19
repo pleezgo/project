@@ -9,7 +9,7 @@
 
 ## Необхідне програмне забезпечення та налаштування мережі
 
-- **ОС:** будь-яка сучасна Linux дистрибуція
+- **ОС:** будь-яка сучасна Linux дистрибуція або Windows
 - **Node.js:** v24+
 - **npm:** v11+
 - **PostgreSQL:** v17+
@@ -67,6 +67,12 @@ cd frontend
 npm run build
 npm run preview
 ```
+### Автоматизація запуску
+
+Для зручності можна використати готові скрипти з папки `docs/scripts/`:
+
+- Linux: `bash docs/scripts/prod.sh`
+- Windows: `docs\scripts\prod.bat`
 
 ## Перевірка працездатності
 

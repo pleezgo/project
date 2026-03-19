@@ -60,5 +60,10 @@ Frontend (у папці `frontend/`):
 npm run dev
 ```
 
+Для зручності можна запустити обидва сервіси одразу одним скриптом:
+
+- Linux: `bash docs/scripts/dev.sh`
+- Windows: `docs\scripts\dev.bat`
+
 Frontend буде доступний за адресою: http://localhost:5173  
 Backend API: http://localhost:5000

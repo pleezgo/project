@@ -41,6 +41,12 @@ cd frontend
 npm run build
 npm run preview
 ```
+### Автоматизація запуску
+
+Для зручності можна використати готові скрипти з папки `docs/scripts/`:
+
+- Linux: `bash docs/scripts/prod.sh`
+- Windows: `docs\scripts\prod.bat`
 
 ## Перевірка після оновлення
 
