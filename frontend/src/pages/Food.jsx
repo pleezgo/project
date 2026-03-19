@@ -523,7 +523,10 @@ export default function Food() {
                           type="number"
                           className="form-input"
                           value={amount}
-                          onChange={e => setAmount(+e.target.value)}
+                          onChange={e => {
+                            const val = e.target.value
+                            setAmount(val === '' ? '' : +val)
+                          }}
                           min="1"
                           max="2000"
                         />
@@ -548,7 +551,7 @@ export default function Food() {
                         <button onClick={() => setSelectedFood(null)} className="btn">
                           ← Назад
                         </button>
-                        <button onClick={addSelected} className="btn btn-primary">
+                        <button onClick={addSelected} className="btn btn-primary" disabled={!amount || +amount < 1}>
                           Додати
                         </button>
                       </div>
@@ -587,7 +590,10 @@ export default function Food() {
                         type="number"
                         className="form-input"
                         value={customForm.amount}
-                        onChange={e => setCustomForm(f => ({...f, amount: +e.target.value}))}
+                        onChange={e => {
+                          const val = e.target.value
+                          setCustomForm(f => ({...f, amount: val === '' ? '' : +val}))
+                        }}
                         placeholder="200"
                       />
                     </div>
@@ -630,7 +636,7 @@ export default function Food() {
 
                   <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                     <button onClick={closeModal} className="btn">Скасувати</button>
-                    <button onClick={addCustom} className="btn btn-primary">Додати</button>
+                    <button onClick={addCustom} className="btn btn-primary" disabled={!customForm.amount || +customForm.amount < 1}>Додати</button>
                   </div>
                 </div>
               )}
