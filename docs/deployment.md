@@ -67,12 +67,29 @@ cd frontend
 npm run build
 npm run preview
 ```
+
 ### Автоматизація запуску
 
 Для зручності можна використати готові скрипти з папки `docs/scripts/`:
 
 - Linux: `bash docs/scripts/prod.sh`
 - Windows: `docs\scripts\prod.bat`
+
+### Розгортання через Docker
+
+Альтернативний спосіб розгортання за допомогою Docker та Docker Compose.
+
+1. Встанови Docker та Docker Compose
+2. Створи `.env` в корені проекту на основі `.env.docker-example`
+3. Запусти всі сервіси:
+```bash
+docker-compose up --build
+```
+
+Для зупинки:
+```bash
+docker-compose down
+```
 
 ## Перевірка працездатності
 
