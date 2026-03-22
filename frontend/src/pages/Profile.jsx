@@ -45,7 +45,7 @@ export default function Profile() {
           water_goal: p.water_goal || 2000,
         })
       })
-      .catch(err => console.log(err))
+      .catch(err => console.error(err))
   }, [])
 
   const save = async () => {

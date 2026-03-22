@@ -9,10 +9,6 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD
 })
 
-pool.on('connect', () => {
-  console.log('Підключено до PostgreSQL')
-})
-
 pool.on('error', (err) => {
   console.error('Помилка PostgreSQL:', err)
 })

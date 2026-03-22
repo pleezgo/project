@@ -58,13 +58,13 @@ export default function Food() {
 
       setLogs(l)
       setProfile(p)
-      console.log('логи завантажено:', l.length)
     } catch(err) {
-      console.log(err)
+      console.error(err)
     }
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     load(date)
   }, [date])
 
@@ -81,9 +81,8 @@ export default function Food() {
       try {
         const results = await api.searchFood(q)
 
-        console.log('результати пошуку:', results)
         setSearchResults(results.slice(0, 8))
-      } catch(err) {
+      } catch {
         setSearchResults([])
       }
     }, 400)

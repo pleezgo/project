@@ -64,7 +64,6 @@ const createTables = async () => {
     `)
 
     await client.query('COMMIT')
-    console.log('Таблиці створено успішно')
   } catch(err) {
     await client.query('ROLLBACK')
     console.error('Помилка створення таблиць:', err)

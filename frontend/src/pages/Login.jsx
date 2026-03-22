@@ -20,7 +20,6 @@ export default function Login() {
 
     try {
       const data = await api.login({ email, password })
-      console.log('логін успішний')
       login(data.user, data.token)
       navigate('/')
     } catch(err) {

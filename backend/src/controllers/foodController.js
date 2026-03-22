@@ -11,7 +11,7 @@ const getFoodLogs = async (req, res) => {
       [req.user.id, date]
     )
     res.json(result.rows)
-  } catch(err) {
+  } catch {
     res.status(500).json({ error: 'Помилка сервера' })
   }
 }
@@ -34,7 +34,7 @@ const getFoodStats = async (req, res) => {
       [req.user.id, days - 1]
     )
     res.json(result.rows)
-  } catch(err) {
+  } catch {
     res.status(500).json({ error: 'Помилка сервера' })
   }
 }
@@ -63,7 +63,7 @@ const addFoodLog = async (req, res) => {
       ]
     )
     res.status(201).json(result.rows[0])
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Помилка сервера' })
   }
 }
@@ -78,7 +78,7 @@ const deleteFoodLog = async (req, res) => {
       return res.status(404).json({error: 'Запис не знайдено'})
     }
     res.json({ message: 'Видалено' })
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Помилка сервера' })
   }
 }
@@ -90,7 +90,7 @@ const getCustomFoods = async (req, res) => {
       [req.user.id]
     )
     res.json(result.rows)
-  } catch(err) {
+  } catch {
     res.status(500).json({ error: 'Помилка сервера' })
   }
 }
@@ -112,7 +112,7 @@ const addCustomFood = async (req, res) => {
        protein_per100 || 0, fat_per100 || 0, carbs_per100 || 0]
     )
     res.status(201).json(result.rows[0])
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Помилка сервера' })
   }
 }
@@ -154,7 +154,7 @@ const searchUSDA = async (req, res) => {
         })
         res.json(foods)
       } catch (e) {
-        console.log('помилка парсингу USDA відповіді', e)
+        console.error('помилка парсингу USDA відповіді', e)
         res.status(500).json({ error: 'Помилка обробки відповіді USDA' })
       }
     })

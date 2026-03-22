@@ -28,7 +28,6 @@ export default function Dashboard() {
     setLoading(true)
     try {
       const dash = await api.getDashboard(d)
-      console.log('дашборд завантажено', dash)
       setData(dash)
     } catch(e) {
       console.error(e)

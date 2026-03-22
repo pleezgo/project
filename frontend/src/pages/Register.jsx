@@ -19,16 +19,13 @@ export default function Register() {
     setError('')
     setLoading(true)
 
-    console.log('submit register form')
-
     try {
       const data = await api.register({name, email, password})
-      console.log('register success', data)
 
       login(data.user, data.token)
       navigate('/')
     } catch(err) {
-      console.log('register error', err)
+      console.error('register error', err)
       setError(err.message)
     } finally {
       setLoading(false)
