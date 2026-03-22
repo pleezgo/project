@@ -1,0 +1,28 @@
+{
+  "name": "project",
+  "version": "1.0.0",
+  "description": "Веб-застосунок для супроводу здорового способу життя. \r Дозволяє вести щоденник харчування з підрахунком КБЖВ, \r пошуком продуктів через USDA FoodData Central API та \r відстеженням денних норм. Планується ведення щоденників харчування, фізичної активності,\r гідрації та сну.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pleezgo/project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/pleezgo/project/issues"
+  },
+  "homepage": "https://github.com/pleezgo/project#readme",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}
