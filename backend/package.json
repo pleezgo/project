@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "lint": "eslint ."
+    "lint": "eslint .", 
+    "type-check": "tsc --noEmit",
+    "check": "npm run lint && npm run type-check"
   },
   "keywords": [],
   "author": "",
@@ -22,8 +24,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@types/node": "^25.5.0",
     "eslint": "^10.1.0",
     "globals": "^17.4.0",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "typescript": "^5.9.3"
   }
 }
