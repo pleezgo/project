@@ -35,3 +35,35 @@ npx eslint .
 cd backend
 npx eslint .
 ```
+
+## Git hooks
+
+Pre-commit хуки налаштовані через husky. При кожному `git commit` автоматично запускається лінтер для frontend і backend. Якщо є помилки - коміт блокується.
+
+Конфігурація знаходиться у файлі `.husky/pre-commit`.
+
+## Інтеграція з процесом збірки
+
+В обох частинах проекту додано скрипти в `package.json`:
+
+- `npm run lint` - запуск лінтера
+- `npm run type-check` - запуск TypeScript перевірки
+- `npm run check` - запуск лінтера і TypeScript перевірки разом
+
+## Статична перевірка типів
+
+Для перевірки типів використовується TypeScript з `checkJs: true` - це дозволяє перевіряти звичайні `.js` файли без переписування коду на TypeScript.
+
+Конфігурація знаходиться у файлах `frontend/tsconfig.json` та `backend/tsconfig.json`.
+
+Для комплексної перевірки коду з кореня проекту:
+
+**Linux/Mac:**
+```bash
+bash docs/scripts/check.sh
+```
+
+**Windows:**
+```bat
+docs\scripts\check.bat
+```
