@@ -2,21 +2,42 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import '../styles/layout.css'
 
+/**
+ * Доступні розділи навігації застосунку.
+ *
+ * Використовуються для побудови основного меню в боковій панелі.
+ */
 const navItems = [
   {to: '/', label: 'Дашборд', end: true},
   {to: '/food', label: 'Харчування'},
 ]
 
+/**
+ * Майбутні розділи застосунку, які поки що недоступні в інтерфейсі.
+ */
 const disabledItems = [
   {label: 'Тренування'},
   {label: 'Гідрація'},
   {label: 'Сон'},
 ]
 
+/**
+* Основний макет авторизованої частини застосунку.
+*
+* Відображає бокову навігацію, інформацію про поточного користувача,
+* кнопку виходу та вкладений контент поточного маршруту через Outlet.
+*
+* @returns {import('react').JSX.Element}
+*/
 export default function Layout() {
   const {user, logout} = useAuth()
   const navigate = useNavigate()
 
+  /**
+  * Виконує вихід користувача із застосунку та перенаправляє на сторінку входу.
+  *
+  * @returns {void}
+  */
   const handleLogout = () => {
     logout()
     navigate('/login')

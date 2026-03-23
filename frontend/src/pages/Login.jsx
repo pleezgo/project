@@ -4,6 +4,14 @@ import { useAuth } from '../context/AuthContext'
 import { api } from '../api/api'
 import '../styles/auth.css'
 
+/**
+ * Сторінка входу користувача в застосунок.
+ *
+ * Дозволяє авторизуватись за email і паролем, зберігає стан завантаження
+ * та відображає повідомлення про помилку у разі неуспішного входу.
+ *
+ * @returns {import('react').JSX.Element}
+ */
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -13,6 +21,15 @@ export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
+  /**
+   * Обробляє надсилання форми входу.
+   *
+   * Виконує автентифікацію через API, зберігає користувача і токен
+   * через AuthContext та перенаправляє на головну сторінку.
+   *
+   * @param {import('react').SubmitEvent<HTMLFormElement>} e Подія надсилання форми.
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')

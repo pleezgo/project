@@ -9,18 +9,44 @@ import Profile from './pages/Profile'
 import './styles/main.css'
 import './styles/components.css'
 
+/**
+ * Захищає приватні маршрути застосунку.
+ *
+ * Показує сторінку завантаження під час відновлення стану автентифікації.
+ * Якщо користувач не авторизований, перенаправляє на сторінку входу.
+ *
+ * @param {{ children: import('react').JSX.Element }} props Властивості компонента.
+ * @returns {import('react').JSX.Element}
+ */
 function PrivateRoute({children}) {
   const { user, loading } = useAuth()
   if(loading) return <div style={{ padding: 24 }}>Завантаження...</div>
   return user ? children : <Navigate to="/login" />
 }
 
+/**
+ * Обмежує доступ до публічних маршрутів для авторизованих користувачів.
+ *
+ * Якщо користувач уже увійшов у систему, перенаправляє його на головну сторінку.
+ * Під час ініціалізації стану автентифікації показує повідомлення про завантаження.
+ *
+ * @param {{ children: import('react').JSX.Element }} props Властивості компонента.
+ * @returns {import('react').JSX.Element}
+ */
 function PublicRoute({children}) {
   const { user, loading } = useAuth()
   if (loading) return <div style={{ padding: 24 }}>Завантаження...</div>
   return user ? <Navigate to="/" /> : children
 }
 
+/**
+ * Кореневий компонент клієнтського застосунку.
+ *
+ * Налаштовує провайдер автентифікації, маршрутизацію та розподіл
+ * публічних і приватних сторінок.
+ *
+ * @returns {import('react').JSX.Element}
+ */
 export default function App() {
   return (
     <AuthProvider>

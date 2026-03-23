@@ -1,6 +1,16 @@
 const pool = require('../config/db')
 const https = require('https')
 
+/**
+ * Повертає список записів харчування поточного користувача за обрану дату.
+ *
+ * Якщо дата не передана, використовує поточну дату. Результат
+ * сортується за часом створення у зростаючому порядку.
+ *
+ * @param {import('express').Request} req HTTP-запит з необов'язковою датою в query-параметрі.
+ * @param {import('express').Response} res HTTP-відповідь зі списком записів харчування або повідомленням про помилку.
+ * @returns {Promise<void>}
+ */
 const getFoodLogs = async (req, res) => {
   const date = req.query.date || new Date().toISOString().split('T')[0]
   try {
@@ -16,6 +26,17 @@ const getFoodLogs = async (req, res) => {
   }
 }
 
+/**
+ * Повертає агреговану статистику харчування користувача за останні N днів.
+ *
+ * Обчислює сумарні калорії, білки, жири та вуглеводи для кожної дати
+ * у вибраному часовому проміжку. Якщо параметр days не передано,
+ * використовується значення 7.
+ *
+ * @param {import('express').Request} req HTTP-запит з необов'язковим query-параметром days.
+ * @param {import('express').Response} res HTTP-відповідь зі статистикою по днях або повідомленням про помилку.
+ * @returns {Promise<void>}
+ */
 const getFoodStats = async (req, res) => {
   const days = parseInt(req.query.days) || 7
   try {
@@ -39,6 +60,16 @@ const getFoodStats = async (req, res) => {
   }
 }
 
+/**
+ * Додає новий запис про спожиту їжу до щоденника користувача.
+ *
+ * Перевіряє наявність обов'язкових полів, створює запис у таблиці food_logs
+ * і повертає створений об'єкт. Якщо дата не передана, використовує поточну дату.
+ *
+ * @param {import('express').Request} req HTTP-запит з даними запису харчування в тілі запиту.
+ * @param {import('express').Response} res HTTP-відповідь зі створеним записом або повідомленням про помилку.
+ * @returns {Promise<void>}
+ */
 const addFoodLog = async (req, res) => {
   const { log_date, meal_type, food_name, amount_g,
           kcal, protein_g, fat_g, carbs_g, usda_fdc_id } = req.body
@@ -68,6 +99,16 @@ const addFoodLog = async (req, res) => {
   }
 }
 
+/**
+ * Видаляє запис про їжу, якщо він належить поточному користувачу.
+ *
+ * Виконує видалення за ідентифікатором запису та user_id. Якщо запис не знайдено,
+ * повертає 404.
+ *
+ * @param {import('express').Request} req HTTP-запит з id запису в параметрах маршруту.
+ * @param {import('express').Response} res HTTP-відповідь з підтвердженням видалення або повідомленням про помилку.
+ * @returns {Promise<void>}
+ */
 const deleteFoodLog = async (req, res) => {
   try {
     const result = await pool.query(
@@ -83,6 +124,15 @@ const deleteFoodLog = async (req, res) => {
   }
 }
 
+/**
+ * Повертає список власних продуктів, створених поточним користувачем.
+ *
+ * Результат сортується за назвою у алфавітному порядку.
+ *
+ * @param {import('express').Request} req HTTP-запит з даними авторизованого користувача.
+ * @param {import('express').Response} res HTTP-відповідь зі списком користувацьких продуктів або повідомленням про помилку.
+ * @returns {Promise<void>}
+ */
 const getCustomFoods = async (req, res) => {
   try {
     const result = await pool.query(
@@ -95,6 +145,16 @@ const getCustomFoods = async (req, res) => {
   }
 }
 
+/**
+ * Додає власний продукт до персонального списку користувача.
+ *
+ * Перевіряє наявність обов'язкових полів і створює запис у таблиці custom_foods.
+ * Значення білків, жирів і вуглеводів за замовчуванням дорівнюють 0, якщо їх не передано.
+ *
+ * @param {import('express').Request} req HTTP-запит з даними продукту в тілі запиту.
+ * @param {import('express').Response} res HTTP-відповідь зі створеним продуктом або повідомленням про помилку.
+ * @returns {Promise<void>}
+ */
 const addCustomFood = async (req, res) => {
   const { name, kcal_per100, protein_per100, fat_per100, carbs_per100 } = req.body
 
@@ -117,8 +177,18 @@ const addCustomFood = async (req, res) => {
   }
 }
 
-// пошук через USDA
-// nutrientId: 1008 - калорії, 1003 - білки, 1004 - жири, 1005 - вуглеводи
+/**
+ * Виконує пошук продуктів через USDA FoodData Central API і повертає
+ * нормалізований список продуктів з основними харчовими показниками.
+ *
+ * Отримує пошуковий запит з req.query.q, звертається до зовнішнього API,
+ * виділяє калорії, білки, жири та вуглеводи й перетворює відповідь у формат,
+ * який використовує клієнтська частина застосунку.
+ *
+ * @param {import('express').Request} req HTTP-запит з пошуковим рядком у query-параметрі q.
+ * @param {import('express').Response} res HTTP-відповідь зі списком знайдених продуктів або повідомленням про помилку.
+ * @returns {Promise<void>}
+ */
 const searchUSDA = async (req, res) => {
   const query = req.query.q
   if(!query) return res.status(400).json({ error: 'Введіть запит' })
@@ -163,6 +233,16 @@ const searchUSDA = async (req, res) => {
   })
 }
 
+/**
+ * Повертає зведені дані для головної сторінки користувача за обрану дату.
+ *
+ * Паралельно отримує профіль користувача та сумарні показники харчування
+ * за день, після чого формує єдину відповідь для dashboard.
+ *
+ * @param {import('express').Request} req HTTP-запит з необов'язковою датою в query-параметрі.
+ * @param {import('express').Response} res HTTP-відповідь зі зведеними даними профілю та харчування.
+ * @returns {Promise<void>}
+ */
 const getDashboard = async (req, res) => {
   const date = req.query.date || new Date().toISOString().split('T')[0]
   try {

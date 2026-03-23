@@ -1,5 +1,13 @@
 const pool = require('./db')
 
+/**
+ * Створює основні таблиці бази даних застосунку, якщо вони ще не існують.
+ *
+ * Виконує ініціалізацію схеми в межах транзакції, створюючи таблиці users,
+ * user_profiles, food_logs і custom_foods. У разі помилки виконує rollback.
+ *
+ * @returns {Promise<void>}
+ */
 const createTables = async () => {
   const client = await pool.connect()
   try {

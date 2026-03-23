@@ -4,6 +4,14 @@ import { useAuth } from '../context/AuthContext'
 import { api } from '../api/api'
 import '../styles/auth.css'
 
+/**
+ * Сторінка реєстрації нового користувача.
+ *
+ * Дозволяє створити обліковий запис, автоматично авторизує користувача
+ * після успішної реєстрації та відображає повідомлення про помилку у разі збою.
+ *
+ * @returns {import('react').JSX.Element}
+ */
 export default function Register() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -14,6 +22,15 @@ export default function Register() {
   const { login } = useAuth()
   const navigate = useNavigate()
 
+  /**
+   * Обробляє надсилання форми реєстрації.
+   *
+   * Викликає API реєстрації, зберігає користувача і токен через AuthContext
+   * та перенаправляє на головну сторінку після успішного створення акаунта.
+   *
+   * @param {import('react').SubmitEvent<HTMLFormElement>} e Подія надсилання форми.
+   * @returns {Promise<void>}
+   */
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')

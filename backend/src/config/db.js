@@ -1,6 +1,14 @@
 const { Pool } = require('pg')
 require('dotenv').config()
 
+/**
+ * Пул підключень до PostgreSQL для роботи з базою даних застосунку.
+ *
+ * Ініціалізується зі змінних середовища та використовується в контролерах
+ * і конфігураційних модулях для виконання SQL-запитів.
+ *
+ * @type {import('pg').Pool}
+ */
 const pool = new Pool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,

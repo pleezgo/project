@@ -2,6 +2,17 @@ const pool = require('../config/db')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
+/**
+ * Реєструє нового користувача, створює базовий профіль і повертає JWT-токен.
+ *
+ * Перевіряє обов'язкові поля, унікальність email та мінімальну довжину пароля.
+ * Після успішного створення користувача автоматично створює запис у таблиці
+ * user_profiles і генерує токен автентифікації.
+ *
+ * @param {import('express').Request} req HTTP-запит з email, password і name у тілі запиту.
+ * @param {import('express').Response} res HTTP-відповідь з токеном і даними користувача.
+ * @returns {Promise<void>}
+ */
 const register = async (req, res) => {
   const { email, password, name } = req.body
 
@@ -48,7 +59,17 @@ const register = async (req, res) => {
   }
 }
 
-
+/**
+ * Автентифікує користувача за email і паролем та повертає JWT-токен.
+ *
+ * Перевіряє наявність обов'язкових полів, шукає користувача в базі даних,
+ * порівнює хеш пароля, у разі успіху повертає токен і базову інформацію
+ * про користувача.
+ *
+ * @param {import('express').Request} req HTTP-запит з email і password у тілі запиту.
+ * @param {import('express').Response} res HTTP-відповідь з токеном і даними користувача.
+ * @returns {Promise<void>}
+ */
 const login = async (req, res) => {
   const { email, password } = req.body
 

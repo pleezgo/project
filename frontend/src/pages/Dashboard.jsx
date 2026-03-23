@@ -1,8 +1,20 @@
 import { useState, useEffect } from 'react'
 import { api } from '../api/api'
 
+/**
+* Повертає поточну дату у форматі YYYY-MM-DD.
+*
+* @returns {string} Поточна дата для використання в API-запитах і стані компонента.
+*/
 const today = () => new Date().toISOString().split('T')[0]
 
+/**
+* Додає або віднімає задану кількість днів від дати у форматі YYYY-MM-DD.
+*
+* @param {string} dateStr Базова дата у форматі YYYY-MM-DD.
+* @param {number} n Кількість днів для зміщення.
+* @returns {string} Нова дата у форматі YYYY-MM-DD.
+*/
 const addDays = (dateStr, n) => {
   const parts = dateStr.split('-')
   const d = new Date(+parts[0], +parts[1] - 1, +parts[2])
@@ -13,17 +25,37 @@ const addDays = (dateStr, n) => {
   return `${y}-${m}-${day}`
 }
 
+/**
+* Форматує дату для відображення в інтерфейсі українською мовою.
+*
+* @param {string} dateStr Дата у форматі YYYY-MM-DD.
+* @returns {string} Локалізоване текстове представлення дати.
+*/
 const displayDate = (dateStr) => {
   return new Date(dateStr + 'T00:00:00').toLocaleDateString('uk-UA', {
     weekday: 'long', day: 'numeric', month: 'long'
   })
 }
 
+/**
+* Відображає дашборд користувача з денними показниками харчування.
+*
+* Завантажує зведені дані за вибрану дату, обчислює цілі по калоріях
+* і макронутрієнтах та показує прогрес виконання.
+*
+* @returns {import('react').JSX.Element}
+*/
 export default function Dashboard() {
   const [date, setDate] = useState(today())
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
 
+  /**
+  * Завантажує дані дашборда за вказану дату і оновлює стан компонента.
+  *
+  * @param {string} d Дата у форматі YYYY-MM-DD.
+  * @returns {Promise<void>}
+  */
   const load = async (d) => {
     setLoading(true)
     try {
@@ -53,6 +85,13 @@ export default function Dashboard() {
   const carbs = Math.round(food?.carbs || 0)
   // const remaining = calorieGoal - kcal
 
+  /**
+  * Обчислює відсоток заповнення показника відносно цілі.
+  *
+  * @param {number} v Поточне значення.
+  * @param {number} max Цільове значення.
+  * @returns {number} Відсоток у межах від 0 до 100.
+  */
   const pct = (v, max) => Math.min(100, Math.round(v / (max || 1) * 100))
 
   return (

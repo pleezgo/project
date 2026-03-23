@@ -1,10 +1,27 @@
 const pool = require('../config/db')
 
+/**
+ * Обчислює базовий рівень метаболізму (BMR) за вагою, зростом, віком і статтю.
+ *
+ * Використовує формулу Mifflin–St Jeor для приблизного розрахунку
+ * кількості калорій, необхідних організму в стані спокою.
+ *
+ * @param {number} weight Вага користувача в кілограмах.
+ * @param {number} height Зріст користувача в сантиметрах.
+ * @param {number} age Вік користувача в роках.
+ * @param {string} sex Стать користувача ('female' або інше значення для чоловічої формули).
+ * @returns {number} Округлене значення BMR.
+ */
 const calcBMR = (weight, height, age, sex) => {
   const base = 10 * weight + 6.25 * height - 5 * age
   return Math.round(sex === 'female' ? base - 161 : base + 5)
 }
 
+/**
+ * Коефіцієнти фізичної активності для розрахунку добових енерговитрат.
+ *
+ * Використовуються під час обчислення TDEE на основі рівня активності користувача.
+ */
 const activityFactors = {
   sedentary: 1.2,
   light: 1.375,
@@ -13,16 +30,46 @@ const activityFactors = {
   very_active: 1.9,
 }
 
+/**
+ * Обчислює загальні добові енерговитрати (TDEE) на основі BMR
+ * і рівня фізичної активності.
+ *
+ * Якщо рівень активності не знайдено, використовується коефіцієнт light.
+ *
+ * @param {number} bmr Базовий рівень метаболізму.
+ * @param {string} activity Рівень фізичної активності користувача.
+ * @returns {number} Округлене значення TDEE.
+ */
 const calcTDEE = (bmr, activity) => {
   return Math.round(bmr * (activityFactors[activity] || 1.375))
 }
 
+/**
+ * Визначає добову калорійну ціль користувача залежно від мети.
+ *
+ * Для схуднення зменшує TDEE на 500 ккал, для набору маси
+ * збільшує на 300 ккал, для підтримки ваги залишає без змін.
+ *
+ * @param {number} tdee Загальні добові енерговитрати.
+ * @param {string} goal Ціль користувача: lose, gain або maintain.
+ * @returns {number} Добова калорійна ціль.
+ */
 const calcCalorieGoal = (tdee, goal) => {
   if(goal == 'lose') return tdee - 500
   if(goal == 'gain') return tdee + 300
   return tdee
 }
 
+/**
+ * Повертає профіль поточного авторизованого користувача разом з email і name.
+ *
+ * Отримує дані з таблиці user_profiles та пов'язаного запису users
+ * за ідентифікатором користувача з req.user.id.
+ *
+ * @param {import('express').Request} req HTTP-запит з даними авторизованого користувача.
+ * @param {import('express').Response} res HTTP-відповідь з даними профілю або повідомленням про помилку.
+ * @returns {Promise<void>}
+ */
 const getProfile = async (req, res) => {
   try {
     const result = await pool.query(
@@ -42,6 +89,18 @@ const getProfile = async (req, res) => {
   }
 }
 
+/**
+ * Оновлює профіль поточного авторизованого користувача та перераховує
+ * похідні показники харчування і активності.
+ *
+ * Якщо передані weight, height, age і sex, функція обчислює BMR, TDEE
+ * та добову калорійну ціль. Також за потреби оновлює ім'я користувача
+ * в таблиці users і повертає актуальний стан профілю.
+ *
+ * @param {import('express').Request} req HTTP-запит з новими даними профілю в тілі запиту.
+ * @param {import('express').Response} res HTTP-відповідь з оновленими даними профілю або повідомленням про помилку.
+ * @returns {Promise<void>}
+ */  
 const updateProfile = async (req, res) => {
   const { age, sex, weight, height, activity, goal, water_goal, name } = req.body
 

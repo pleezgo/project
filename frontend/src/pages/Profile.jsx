@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import { api } from '../api/api'
 
+/**
+* Доступні рівні фізичної активності для налаштування профілю користувача.
+*/
 const ACTIVITIES = [
   { value: 'sedentary', label: 'Сидячий спосіб життя' },
   { value: 'light', label: 'Легка активність (1–3 рази/тиж)' },
@@ -9,12 +12,24 @@ const ACTIVITIES = [
   { value: 'very_active', label: 'Дуже активний' }
 ]
 
+/**
+ * Доступні цілі користувача для розрахунку добової калорійності.
+ */
 const GOALS = [
   { value: 'lose', label: 'Схуднення (-500 ккал)' },
   { value: 'maintain', label: 'Підтримка' },
   { value: 'gain', label: 'Набір маси (+300 ккал)' }
 ]
 
+/**
+ * Сторінка профілю користувача.
+ *
+ * Завантажує поточний профіль, дозволяє редагувати персональні дані,
+ * параметри активності й цілі, а також відображає розраховані показники
+ * BMR, TDEE, калорійну ціль та індекс маси тіла.
+ *
+ * @returns {import('react').JSX.Element}
+ */
 export default function Profile() {
   const [form, setForm] = useState({
     name: '',
@@ -48,6 +63,15 @@ export default function Profile() {
       .catch(err => console.error(err))
   }, [])
 
+  /**
+   * Зберігає оновлені дані профілю користувача через API.
+   *
+   * Перевіряє наявність обов'язкових полів для розрахунку норм,
+   * перетворює числові значення форми та після успішного збереження
+   * оновлює локальний стан профілю.
+   *
+   * @returns {Promise<void>}
+   */
   const save = async () => {
     setError('')
 
@@ -88,7 +112,13 @@ export default function Profile() {
     : bmi < 25 ? 'var(--green)'
     : bmi < 30 ? 'var(--amber)'
     : 'var(--red)'
-
+    
+  /**
+   * Повертає набір властивостей для прив'язки поля форми до стану компонента.
+   *
+   * @param {string} key Ключ поля у стані form.
+   * @returns {{ value: string | number, onChange: (e: import('react').ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void }}
+   */
   const f = (key) => ({
     value: form[key],
     onChange: e => setForm(prev => ({ ...prev, [key]: e.target.value }))
