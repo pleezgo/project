@@ -14,9 +14,9 @@ import './styles/components.css'
  *
  * Показує сторінку завантаження під час відновлення стану автентифікації.
  * Якщо користувач не авторизований, перенаправляє на сторінку входу.
- *
- * @param {Object} props Властивості компонента.
- * @returns {Object}
+ * @param {object} props Властивості компонента.
+ * @param {object} props.children Дочірній елемент, який потрібно відобразити для авторизованого користувача.
+ * @returns {object} JSX-елемент захищеного маршруту або перенаправлення.
  */
 function PrivateRoute({children}) {
   const { user, loading } = useAuth()
@@ -29,9 +29,9 @@ function PrivateRoute({children}) {
  *
  * Якщо користувач уже увійшов у систему, перенаправляє його на головну сторінку.
  * Під час ініціалізації стану автентифікації показує повідомлення про завантаження.
- *
- * @param {Object} props Властивості компонента.
- * @returns {Object}
+ * @param {object} props Властивості компонента.
+ * @param {object} props.children Дочірній елемент публічного маршруту.
+ * @returns {object} JSX-елемент публічного маршруту або перенаправлення.
  */
 function PublicRoute({children}) {
   const { user, loading } = useAuth()
@@ -44,8 +44,7 @@ function PublicRoute({children}) {
  *
  * Налаштовує провайдер автентифікації, маршрутизацію та розподіл
  * публічних і приватних сторінок.
- *
- * @returns {Object}
+ * @returns {object} Кореневий JSX-елемент застосунку.
  */
 export default function App() {
   return (

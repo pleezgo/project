@@ -2,19 +2,17 @@ import { useState, useEffect, useRef } from 'react'
 import { api } from '../api/api'
 
 /**
-* Повертає поточну дату у форматі YYYY-MM-DD.
-*
-* @returns {string} Поточна дата для використання в API-запитах і стані компонента.
-*/
+ * Повертає поточну дату у форматі YYYY-MM-DD.
+ * @returns {string} Поточна дата для використання в API-запитах і стані компонента.
+ */
 const today = () => new Date().toISOString().split('T')[0]
 
 /**
-* Додає або віднімає задану кількість днів від дати у форматі YYYY-MM-DD.
-*
-* @param {string} dateStr Базова дата у форматі YYYY-MM-DD.
-* @param {number} n Кількість днів для зміщення.
-* @returns {string} Нова дата у форматі YYYY-MM-DD.
-*/
+ * Додає або віднімає задану кількість днів від дати у форматі YYYY-MM-DD.
+ * @param {string} dateStr Базова дата у форматі YYYY-MM-DD.
+ * @param {number} n Кількість днів для зміщення.
+ * @returns {string} Нова дата у форматі YYYY-MM-DD.
+ */
 const addDays = (dateStr, n) => {
   const parts = dateStr.split('-')
   const d = new Date(+parts[0], +parts[1] - 1, +parts[2])
@@ -28,11 +26,10 @@ const addDays = (dateStr, n) => {
 }
 
 /**
-* Форматує дату для відображення в інтерфейсі українською мовою.
-*
-* @param {string} dateStr Дата у форматі YYYY-MM-DD.
-* @returns {string} Локалізоване текстове представлення дати.
-*/
+ * Форматує дату для відображення в інтерфейсі українською мовою.
+ * @param {string} dateStr Дата у форматі YYYY-MM-DD.
+ * @returns {string} Локалізоване текстове представлення дати.
+ */
 const displayDate = (dateStr) =>
   new Date(dateStr + 'T00:00:00').toLocaleDateString('uk-UA', {
     weekday: 'short',
@@ -41,8 +38,8 @@ const displayDate = (dateStr) =>
   })
 
 /**
-* Варіанти прийомів їжі, доступні в щоденнику харчування.
-*/
+ * Варіанти прийомів їжі, доступні в щоденнику харчування.
+ */
 const MEALS = [
   { id: 'breakfast', label: 'Сніданок' },
   { id: 'lunch', label: 'Обід' },
@@ -53,14 +50,13 @@ const MEALS = [
 const COLS = '1fr 44px 44px 44px 44px 60px 24px'
 
 /**
-* Сторінка щоденника харчування.
-*
-* Завантажує записи харчування і профіль користувача за вибрану дату,
-* дозволяє шукати продукти через USDA, додавати власні продукти,
-* створювати записи харчування та видаляти їх.
-*
-* @returns {Object}
-*/
+ * Сторінка щоденника харчування.
+ *
+ * Завантажує записи харчування і профіль користувача за вибрану дату,
+ * дозволяє шукати продукти через USDA, додавати власні продукти,
+ * створювати записи харчування та видаляти їх.
+ * @returns {object} SX-елемент сторінки харчування.
+ */
 export default function Food() {
   const [date, setDate] = useState(today())
   const [logs, setLogs] = useState([])
@@ -83,11 +79,10 @@ export default function Food() {
   const searchTimer = useRef(null)
 
   /**
-  * Завантажує записи харчування і профіль користувача за вказану дату.
-  *
-  * @param {string} d Дата у форматі YYYY-MM-DD.
-  * @returns {Promise<void>}
-  */
+   * Завантажує записи харчування і профіль користувача за вказану дату.
+   * @param {string} d Дата у форматі YYYY-MM-DD.
+   * @returns {Promise<void>}
+   */
   const load = async (d) => {
     try {
       const [l, p] = await Promise.all([api.getFoodLogs(d), api.getProfile()])
@@ -105,14 +100,13 @@ export default function Food() {
   }, [date])
 
   /**
-  * Оновлює пошуковий запит і запускає відкладений пошук продуктів через API.
-  *
-  * Використовує debounce через setTimeout, щоб не надсилати запит
-  * на кожне натискання клавіші.
-  *
-  * @param {string} q Пошуковий рядок.
-  * @returns {void}
-  */
+   * Оновлює пошуковий запит і запускає відкладений пошук продуктів через API.
+   *
+   * Використовує debounce через setTimeout, щоб не надсилати запит
+   * на кожне натискання клавіші.
+   * @param {string} q Пошуковий рядок.
+   * @returns {void}
+   */
   const handleSearch = (q) => {
     setSearchQ(q)
     clearTimeout(searchTimer.current)
@@ -134,13 +128,12 @@ export default function Food() {
   }
 
   /**
-  * Додає вибраний продукт із результатів пошуку до щоденника харчування.
-  *
-  * Перераховує харчові значення відповідно до вибраної кількості грамів,
-  * створює запис через API, закриває модальне вікно і оновлює список.
-  *
-  * @returns {Promise<void>}
-  */
+   * Додає вибраний продукт із результатів пошуку до щоденника харчування.
+   *
+   * Перераховує харчові значення відповідно до вибраної кількості грамів,
+   * створює запис через API, закриває модальне вікно і оновлює список.
+   * @returns {Promise<void>}
+   */
   const addSelected = async () => {
     if(!selectedFood) return
 
@@ -163,13 +156,12 @@ export default function Food() {
   }
 
   /**
-  * Додає власний продукт до щоденника і зберігає його в персональному списку користувача.
-  *
-  * Використовує дані з форми customForm, обчислює харчові значення
-  * для вибраної кількості та після успішного створення оновлює стан сторінки.
-  *
-  * @returns {Promise<void>}
-  */
+   * Додає власний продукт до щоденника і зберігає його в персональному списку користувача.
+   *
+   * Використовує дані з форми customForm, обчислює харчові значення
+   * для вибраної кількості та після успішного створення оновлює стан сторінки.
+   * @returns {Promise<void>}
+   */
   const addCustom = async () => {
     const { name, kcal_per100, protein_per100, fat_per100, carbs_per100, amount: amt } = customForm
 
@@ -201,23 +193,21 @@ export default function Food() {
   }
 
   /**
-  * Видаляє запис харчування за ідентифікатором і перезавантажує дані сторінки.
-  *
-  * @param {number|string} id Ідентифікатор запису харчування.
-  * @returns {Promise<void>}
-  */
+   * Видаляє запис харчування за ідентифікатором і перезавантажує дані сторінки.
+   * @param {number|string} id Ідентифікатор запису харчування.
+   * @returns {Promise<void>}
+   */
   const deleteLog = async (id) => {
     await api.deleteFoodLog(id)
     load(date)
   }
 
   /**
-  * Відкриває модальне вікно додавання їжі для вибраного прийому їжі
-  * та скидає допоміжний стан форми пошуку.
-  *
-  * @param {string} meal Ідентифікатор прийому їжі.
-  * @returns {void}
-  */
+   * Відкриває модальне вікно додавання їжі для вибраного прийому їжі
+   * та скидає допоміжний стан форми пошуку.
+   * @param {string} meal Ідентифікатор прийому їжі.
+   * @returns {void}
+   */
   const openModal = (meal) => {
     setCurrentMeal(meal)
     setShowModal(true)
@@ -229,10 +219,9 @@ export default function Food() {
   }
 
   /**
-  * Закриває модальне вікно і скидає тимчасовий стан вибору продукту та форми.
-  *
-  * @returns {void}
-  */
+   * Закриває модальне вікно і скидає тимчасовий стан вибору продукту та форми.
+   * @returns {void}
+   */
   const closeModal = () => {
     setShowModal(false)
     setSelectedFood(null)
@@ -261,12 +250,11 @@ export default function Food() {
   }), {kcal: 0, protein: 0, fat: 0, carbs: 0})
 
   /**
-  * Обчислює відсоток виконання цілі в межах від 0 до 100.
-  *
-  * @param {number} v Поточне значення.
-  * @param {number} m Цільове значення.
-  * @returns {number} Відсоток виконання.
-  */
+   * Обчислює відсоток виконання цілі в межах від 0 до 100.
+   * @param {number} v Поточне значення.
+   * @param {number} m Цільове значення.
+   * @returns {number} Відсоток виконання.
+   */
   const pct = (v, m) => Math.min(100, Math.round(v / (m || 1) * 100))
 
   const preview = selectedFood

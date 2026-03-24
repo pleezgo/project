@@ -9,8 +9,7 @@ import '../styles/auth.css'
  *
  * Дозволяє авторизуватись за email і паролем, зберігає стан завантаження
  * та відображає повідомлення про помилку у разі неуспішного входу.
- *
- * @returns {Object}
+ * @returns {object} JSX-елемент сторінки входу.
  */
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -26,8 +25,7 @@ export default function Login() {
    *
    * Виконує автентифікацію через API, зберігає користувача і токен
    * через AuthContext та перенаправляє на головну сторінку.
-   *
-   * @param {Object} e Подія надсилання форми.
+   * @param {object} e Подія надсилання форми.
    * @returns {Promise<void>}
    */
   const handleSubmit = async (e) => {
