@@ -23,4 +23,4 @@ COPY --from=builder /app/dist ./dist
 
 EXPOSE 4173
 
-CMD ["npm", "run", "preview", "--", "--host"]
+CMD sh -c "npm run preview -- --host --port ${PORT:-4173}"
