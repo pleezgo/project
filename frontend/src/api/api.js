@@ -1,7 +1,21 @@
+/**
+ * Базова адреса backend API.
+ *
+ * Якщо змінна середовища VITE_API_URL задана, використовується вона.
+ * Інакше застосунок працює з локальним сервером за замовчуванням.
+ */
 const BASE_URL = import.meta.env.VITE_API_URL 
   ? `${import.meta.env.VITE_API_URL}/api` 
   : 'http://localhost:5000/api'
 
+/**
+ * Формує стандартні HTTP-заголовки для запитів до API.
+ *
+ * Якщо в localStorage збережено JWT-токен, додає заголовок Authorization
+ * у форматі Bearer token.
+ *
+ * @returns {Record<string, string>} Об'єкт HTTP-заголовків для fetch-запиту.
+ */
 const getHeaders = () => {
   const token = localStorage.getItem('token')
   return {
@@ -10,6 +24,18 @@ const getHeaders = () => {
   }
 }
 
+/**
+ * Виконує HTTP-запит до backend API і повертає розпарсену JSON-відповідь.
+ *
+ * Автоматично додає базову адресу API, стандартні заголовки та,
+ * за потреби, серіалізує тіло запиту. Якщо сервер повертає помилку,
+ * викидає виняток з текстом помилки.
+ *
+ * @param {string} method HTTP-метод запиту.
+ * @param {string} path Відносний шлях до API-ендпоінта.
+ * @param {Object | null} [body=null] Тіло запиту для POST/PUT операцій.
+ * @returns {Promise<any>} Дані відповіді сервера у форматі JSON.
+ */
 const request = async (method, path, body = null) => {
   const options = {
     method,
@@ -24,6 +50,12 @@ const request = async (method, path, body = null) => {
   return data
 }
 
+/**
+ * Публічний клієнт для взаємодії фронтенда з backend API.
+ *
+ * Містить методи для автентифікації, роботи з профілем користувача,
+ * dashboard та записами харчування.
+ */
 export const api = {
   register: (body) => request('POST', '/auth/register', body),
   login: (body) => request('POST', '/auth/login', body),
