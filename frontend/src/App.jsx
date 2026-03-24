@@ -1,3 +1,15 @@
+/**
+ * Головний модуль маршрутизації frontend-застосунку.
+ *
+ * Цей файл визначає, які сторінки доступні користувачу,
+ * як розділяються публічні та приватні маршрути, і як
+ * стан автентифікації впливає на навігацію в застосунку.
+ *
+ * Модуль використовує AuthContext для перевірки поточного
+ * користувача і керує доступом до сторінок входу, реєстрації,
+ * dashboard, харчування та профілю.
+ */
+
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import Layout from './components/Layout'
