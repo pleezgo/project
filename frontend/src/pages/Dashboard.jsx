@@ -43,7 +43,7 @@ const displayDate = (dateStr) => {
 * Завантажує зведені дані за вибрану дату, обчислює цілі по калоріях
 * і макронутрієнтах та показує прогрес виконання.
 *
-* @returns {import('react').JSX.Element}
+* @returns {Object}
 */
 export default function Dashboard() {
   const [date, setDate] = useState(today())

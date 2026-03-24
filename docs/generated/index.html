@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>Про проект</h1>
+<p>Веб-застосунок для супроводу здорового способу життя.
+Дозволяє вести щоденник харчування з підрахунком КБЖВ,
+пошуком продуктів через USDA FoodData Central API та
+відстеженням денних норм. Планується ведення щоденників харчування, фізичної активності,
+гідрації та сну.</p>
+<h2>Технології</h2>
+<ul>
+<li><strong>Frontend:</strong> React, Vite, React Router</li>
+<li><strong>Backend:</strong> Node.js, Express</li>
+<li><strong>База даних:</strong> PostgreSQL</li>
+</ul>
+<h2>Реалізований функціонал</h2>
+<ul>
+<li>Реєстрація та авторизація (JWT)</li>
+<li>Щоденник харчування</li>
+<li>Пошук продуктів через USDA API</li>
+<li>Власні продукти</li>
+<li>Розрахунок BMI, BMR, TDEE</li>
+<li>Головна сторінка зі статистикою</li>
+</ul>
+<h2>Вимоги</h2>
+<ul>
+<li>Node.js v24+</li>
+<li>npm v11+</li>
+<li>PostgreSQL v17+</li>
+</ul>
+<h2>Встановлення та запуск</h2>
+<h3>1. Клонування та встановлення залежностей</h3>
+<pre class="prettyprint source lang-bash"><code>git clone https://github.com/pleezgo/project.git
+cd project
+cd backend
+npm install
+cd ../frontend
+npm install
+</code></pre>
+<p>Створи файл <code>backend/.env</code> і заповни своїми значеннями на основі <code>backend/.env.example</code></p>
+<h3>2. Налаштування бази даних</h3>
+<p>Створи базу даних:</p>
+<pre class="prettyprint source lang-sql"><code>CREATE DATABASE your_database_name;
+</code></pre>
+<p>Таблиці створюються автоматично при першому запуску backend.</p>
+<h3>3. Запуск у режимі розробки</h3>
+<p>Backend (у папці <code>backend/</code>):</p>
+<pre class="prettyprint source lang-bash"><code>npm run dev
+</code></pre>
+<p>Frontend (у папці <code>frontend/</code>):</p>
+<pre class="prettyprint source lang-bash"><code>npm run dev
+</code></pre>
+<p>Для зручності можна запустити обидва сервіси одразу одним скриптом:</p>
+<ul>
+<li>Linux: <code>bash docs/scripts/dev.sh</code></li>
+<li>Windows: <code>docs\scripts\dev.bat</code></li>
+</ul>
+<p>Frontend буде доступний за адресою: http://localhost:5173<br>
+Backend API: http://localhost:5000</p>
+<h2>Правила документування коду</h2>
+<p>У проєкті для документування коду використовується JSDoc. Документація підтримується для backend (<code>backend/src</code>) і frontend (<code>frontend/src</code>) та генерується автоматично командою:</p>
+<pre class="prettyprint source lang-bash"><code>npm run docs
+</code></pre>
+<h3>Що потрібно документувати</h3>
+<p>Обов'язково документуються:</p>
+<ul>
+<li>публічні функції, методи, компоненти та модулі</li>
+<li>middleware, контролери, маршрути та інші точки входу</li>
+<li>бізнес-логіка, якщо вона не є очевидною</li>
+<li>архітектурні рішення, взаємодію між frontend і backend та неочевидні алгоритми</li>
+<li>допоміжні функції з важливими обчисленнями</li>
+<li>константи та структури даних, якщо вони впливають на поведінку системи</li>
+</ul>
+<h3>Як оформлювати документацію</h3>
+<p>Для документації використовуються JSDoc-коментарі у форматі <code>/** ... */</code>.</p>
+<p>У коментарях слід:</p>
+<ul>
+<li>коротко описати призначення сутності</li>
+<li>за потреби пояснити логіку роботи</li>
+<li>вказати параметри через <code>@param</code></li>
+<li>вказати результат через <code>@returns</code></li>
+<li>для типізованих значень або об’єктів використовувати <code>@type</code>, якщо це доречно.</li>
+</ul>
+<h3>Правила підтримки документації</h3>
+<p>Після змін у публічних інтерфейсах, бізнес-логіці або важливих модулях необхідно:</p>
+<ol>
+<li>оновити JSDoc-коментарі</li>
+<li>повторно згенерувати документацію командою <code>npm run docs</code></li>
+</ol>
+<p>Документація є частиною підтримки проєкту й повинна оновлюватися разом із кодом.</p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#ACTIVITIES">ACTIVITIES</a></li><li><a href="global.html#AuthContext">AuthContext</a></li><li><a href="global.html#AuthProvider">AuthProvider</a></li><li><a href="global.html#GOALS">GOALS</a></li><li><a href="global.html#MEALS">MEALS</a></li><li><a href="global.html#PrivateRoute">PrivateRoute</a></li><li><a href="global.html#PublicRoute">PublicRoute</a></li><li><a href="global.html#activityFactors">activityFactors</a></li><li><a href="global.html#addCustomFood">addCustomFood</a></li><li><a href="global.html#addDays">addDays</a></li><li><a href="global.html#addFoodLog">addFoodLog</a></li><li><a href="global.html#authMiddleware">authMiddleware</a></li><li><a href="global.html#calcBMR">calcBMR</a></li><li><a href="global.html#calcCalorieGoal">calcCalorieGoal</a></li><li><a href="global.html#calcTDEE">calcTDEE</a></li><li><a href="global.html#createTables">createTables</a></li><li><a href="global.html#deleteFoodLog">deleteFoodLog</a></li><li><a href="global.html#disabledItems">disabledItems</a></li><li><a href="global.html#displayDate">displayDate</a></li><li><a href="global.html#getCustomFoods">getCustomFoods</a></li><li><a href="global.html#getDashboard">getDashboard</a></li><li><a href="global.html#getFoodLogs">getFoodLogs</a></li><li><a href="global.html#getFoodStats">getFoodStats</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#navItems">navItems</a></li><li><a href="global.html#pool">pool</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#searchUSDA">searchUSDA</a></li><li><a href="global.html#start">start</a></li><li><a href="global.html#today">today</a></li><li><a href="global.html#updateProfile">updateProfile</a></li><li><a href="global.html#useAuth">useAuth</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Mar 24 2026 18:17:41 GMT+0200 (за східноєвропейським стандартним часом)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

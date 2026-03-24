@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: frontend/src/context/AuthContext.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: frontend/src/context/AuthContext.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { createContext, useContext, useState, useEffect } from 'react'
+
+/**
+ * Контекст автентифікації застосунку.
+ *
+ * Зберігає поточного користувача, стан завантаження та методи входу і виходу.
+ */
+const AuthContext = createContext(null)
+
+/**
+ * Провайдер автентифікації, який керує станом користувача в застосунку.
+ *
+ * Під час ініціалізації відновлює користувача з localStorage, якщо збережено
+ * токен і серіалізовані дані користувача. Надає дочірнім компонентам доступ
+ * до user, loading, login і logout через AuthContext.
+ *
+ * @param {Object} props Властивості компонента.
+ * @returns {Object}
+ */
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    const savedUser = localStorage.getItem('user')
+
+    if(token &amp;&amp; savedUser) {
+      try {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setUser(JSON.parse(savedUser))
+      } catch {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+      }
+    }
+    setLoading(false)
+  }, [])
+
+  /**
+  * Зберігає токен і дані користувача та оновлює стан автентифікації.
+  *
+  * @param {Object} userData Дані авторизованого користувача.
+  * @param {string} token JWT-токен доступу.
+  * @returns {void}
+  */
+  const login = (userData, token) => {
+    localStorage.setItem('token', token)
+    localStorage.setItem('user', JSON.stringify(userData))
+    setUser(userData)
+  }
+
+  /**
+  * Очищає дані автентифікації з localStorage і скидає поточного користувача.
+  *
+  * @returns {void}
+  */
+  const logout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    setUser(null)
+  }
+
+  return (
+    &lt;AuthContext.Provider value={{ user, loading, login, logout }}>
+      {children}
+    &lt;/AuthContext.Provider>
+  )
+}
+
+/**
+ * Повертає значення контексту автентифікації.
+ *
+ * Використовується компонентами для доступу до поточного користувача,
+ * стану завантаження та методів login/logout.
+ *
+ * @returns {{ user: Object | null, loading: boolean, login: Function, logout: Function }}
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function useAuth() {
+  return useContext(AuthContext)
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#ACTIVITIES">ACTIVITIES</a></li><li><a href="global.html#AuthContext">AuthContext</a></li><li><a href="global.html#AuthProvider">AuthProvider</a></li><li><a href="global.html#GOALS">GOALS</a></li><li><a href="global.html#MEALS">MEALS</a></li><li><a href="global.html#PrivateRoute">PrivateRoute</a></li><li><a href="global.html#PublicRoute">PublicRoute</a></li><li><a href="global.html#activityFactors">activityFactors</a></li><li><a href="global.html#addCustomFood">addCustomFood</a></li><li><a href="global.html#addDays">addDays</a></li><li><a href="global.html#addFoodLog">addFoodLog</a></li><li><a href="global.html#authMiddleware">authMiddleware</a></li><li><a href="global.html#calcBMR">calcBMR</a></li><li><a href="global.html#calcCalorieGoal">calcCalorieGoal</a></li><li><a href="global.html#calcTDEE">calcTDEE</a></li><li><a href="global.html#createTables">createTables</a></li><li><a href="global.html#deleteFoodLog">deleteFoodLog</a></li><li><a href="global.html#disabledItems">disabledItems</a></li><li><a href="global.html#displayDate">displayDate</a></li><li><a href="global.html#getCustomFoods">getCustomFoods</a></li><li><a href="global.html#getDashboard">getDashboard</a></li><li><a href="global.html#getFoodLogs">getFoodLogs</a></li><li><a href="global.html#getFoodStats">getFoodStats</a></li><li><a href="global.html#getProfile">getProfile</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#navItems">navItems</a></li><li><a href="global.html#pool">pool</a></li><li><a href="global.html#register">register</a></li><li><a href="global.html#searchUSDA">searchUSDA</a></li><li><a href="global.html#start">start</a></li><li><a href="global.html#today">today</a></li><li><a href="global.html#updateProfile">updateProfile</a></li><li><a href="global.html#useAuth">useAuth</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue Mar 24 2026 18:17:41 GMT+0200 (за східноєвропейським стандартним часом)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

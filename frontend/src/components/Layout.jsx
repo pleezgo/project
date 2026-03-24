@@ -27,7 +27,7 @@ const disabledItems = [
 * Відображає бокову навігацію, інформацію про поточного користувача,
 * кнопку виходу та вкладений контент поточного маршруту через Outlet.
 *
-* @returns {import('react').JSX.Element}
+* @returns {Object}
 */
 export default function Layout() {
   const {user, logout} = useAuth()

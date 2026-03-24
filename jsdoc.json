@@ -1,0 +1,12 @@
+{
+  "source": {
+    "include": ["backend/src", "frontend/src"],
+    "includePattern": ".+\\.(js|jsx)$",
+    "excludePattern": "(^|/|\\\\)_"
+  },
+  "opts": {
+    "destination": "docs/generated",
+    "recurse": true
+  },
+  "plugins": ["plugins/markdown"]
+}   

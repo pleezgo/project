@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "husky"
+    "prepare": "husky",
+    "docs": "jsdoc -c jsdoc.json -R README.md"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
   },
   "homepage": "https://github.com/pleezgo/project#readme",
   "devDependencies": {
-    "husky": "^9.1.7"
+    "husky": "^9.1.7",
+    "jsdoc": "^4.0.5"
   }
 }

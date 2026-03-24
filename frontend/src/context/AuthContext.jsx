@@ -14,8 +14,8 @@ const AuthContext = createContext(null)
  * токен і серіалізовані дані користувача. Надає дочірнім компонентам доступ
  * до user, loading, login і logout через AuthContext.
  *
- * @param {{ children: import('react').ReactNode }} props Властивості компонента.
- * @returns {import('react').JSX.Element}
+ * @param {Object} props Властивості компонента.
+ * @returns {Object}
  */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)

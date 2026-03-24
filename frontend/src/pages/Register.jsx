@@ -10,7 +10,7 @@ import '../styles/auth.css'
  * Дозволяє створити обліковий запис, автоматично авторизує користувача
  * після успішної реєстрації та відображає повідомлення про помилку у разі збою.
  *
- * @returns {import('react').JSX.Element}
+ * @returns {Object}
  */
 export default function Register() {
   const [name, setName] = useState('')
@@ -28,7 +28,7 @@ export default function Register() {
    * Викликає API реєстрації, зберігає користувача і токен через AuthContext
    * та перенаправляє на головну сторінку після успішного створення акаунта.
    *
-   * @param {import('react').SubmitEvent<HTMLFormElement>} e Подія надсилання форми.
+   * @param {Object} e Подія надсилання форми.
    * @returns {Promise<void>}
    */
   const handleSubmit = async (e) => {

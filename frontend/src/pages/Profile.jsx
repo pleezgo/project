@@ -28,7 +28,7 @@ const GOALS = [
  * параметри активності й цілі, а також відображає розраховані показники
  * BMR, TDEE, калорійну ціль та індекс маси тіла.
  *
- * @returns {import('react').JSX.Element}
+ * @returns {Object}
  */
 export default function Profile() {
   const [form, setForm] = useState({
@@ -117,7 +117,7 @@ export default function Profile() {
    * Повертає набір властивостей для прив'язки поля форми до стану компонента.
    *
    * @param {string} key Ключ поля у стані form.
-   * @returns {{ value: string | number, onChange: (e: import('react').ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void }}
+   * @returns {Object}
    */
   const f = (key) => ({
     value: form[key],
