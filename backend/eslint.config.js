@@ -1,9 +1,14 @@
 const js = require('@eslint/js')
 const globals = require('globals')
+const jsdoc = require('eslint-plugin-jsdoc')
 
 module.exports = [
   {
     ignores: ['node_modules'],
+  },
+  {
+    ...jsdoc.configs['flat/recommended'],
+    files: ['src/**/*.js'],
   },
   {
     files: ['**/*.js'],

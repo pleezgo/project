@@ -6,8 +6,7 @@ require('dotenv').config()
  *
  * Ініціалізується зі змінних середовища та використовується в контролерах
  * і конфігураційних модулях для виконання SQL-запитів.
- *
- * @type {Object}
+ * @type {object}
  */
 const pool = new Pool({
   host: process.env.DB_HOST,

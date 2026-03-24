@@ -5,7 +5,6 @@ const pool = require('../config/db')
  *
  * Використовує формулу Mifflin–St Jeor для приблизного розрахунку
  * кількості калорій, необхідних організму в стані спокою.
- *
  * @param {number} weight Вага користувача в кілограмах.
  * @param {number} height Зріст користувача в сантиметрах.
  * @param {number} age Вік користувача в роках.
@@ -35,7 +34,6 @@ const activityFactors = {
  * і рівня фізичної активності.
  *
  * Якщо рівень активності не знайдено, використовується коефіцієнт light.
- *
  * @param {number} bmr Базовий рівень метаболізму.
  * @param {string} activity Рівень фізичної активності користувача.
  * @returns {number} Округлене значення TDEE.
@@ -49,7 +47,6 @@ const calcTDEE = (bmr, activity) => {
  *
  * Для схуднення зменшує TDEE на 500 ккал, для набору маси
  * збільшує на 300 ккал, для підтримки ваги залишає без змін.
- *
  * @param {number} tdee Загальні добові енерговитрати.
  * @param {string} goal Ціль користувача: lose, gain або maintain.
  * @returns {number} Добова калорійна ціль.
@@ -65,9 +62,8 @@ const calcCalorieGoal = (tdee, goal) => {
  *
  * Отримує дані з таблиці user_profiles та пов'язаного запису users
  * за ідентифікатором користувача з req.user.id.
- *
- * @param {Object} req HTTP-запит з даними авторизованого користувача.
- * @param {Object} res HTTP-відповідь з даними профілю або повідомленням про помилку.
+ * @param {object} req HTTP-запит з даними авторизованого користувача.
+ * @param {object} res HTTP-відповідь з даними профілю або повідомленням про помилку.
  * @returns {Promise<void>}
  */
 const getProfile = async (req, res) => {
@@ -96,9 +92,8 @@ const getProfile = async (req, res) => {
  * Якщо передані weight, height, age і sex, функція обчислює BMR, TDEE
  * та добову калорійну ціль. Також за потреби оновлює ім'я користувача
  * в таблиці users і повертає актуальний стан профілю.
- *
- * @param {Object} req HTTP-запит з новими даними профілю в тілі запиту.
- * @param {Object} res HTTP-відповідь з оновленими даними профілю або повідомленням про помилку.
+ * @param {object} req HTTP-запит з новими даними профілю в тілі запиту.
+ * @param {object} res HTTP-відповідь з оновленими даними профілю або повідомленням про помилку.
  * @returns {Promise<void>}
  */  
 const updateProfile = async (req, res) => {

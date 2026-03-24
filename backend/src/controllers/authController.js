@@ -8,9 +8,8 @@ const jwt = require('jsonwebtoken')
  * Перевіряє обов'язкові поля, унікальність email та мінімальну довжину пароля.
  * Після успішного створення користувача автоматично створює запис у таблиці
  * user_profiles і генерує токен автентифікації.
- *
- * @param {Object} req HTTP-запит з email, password і name у тілі запиту.
- * @param {Object} res HTTP-відповідь з токеном і даними користувача.
+ * @param {object} req HTTP-запит з email, password і name у тілі запиту.
+ * @param {object} res HTTP-відповідь з токеном і даними користувача.
  * @returns {Promise<void>}
  */
 const register = async (req, res) => {
@@ -65,9 +64,8 @@ const register = async (req, res) => {
  * Перевіряє наявність обов'язкових полів, шукає користувача в базі даних,
  * порівнює хеш пароля, у разі успіху повертає токен і базову інформацію
  * про користувача.
- *
- * @param {Object} req HTTP-запит з email і password у тілі запиту.
- * @param {Object} res HTTP-відповідь з токеном і даними користувача.
+ * @param {object} req HTTP-запит з email і password у тілі запиту.
+ * @param {object} res HTTP-відповідь з токеном і даними користувача.
  * @returns {Promise<void>}
  */
 const login = async (req, res) => {

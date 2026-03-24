@@ -5,10 +5,9 @@ const jwt = require('jsonwebtoken')
  *
  * Очікує токен у форматі Bearer token. Якщо токен відсутній, повертає 401.
  * Якщо токен невалідний або прострочений, повертає 403.
- *
- * @param {Object} req HTTP-запит із заголовком Authorization.
- * @param {Object} res HTTP-відповідь із повідомленням про помилку у разі неуспішної перевірки.
- * @param {Function} next Функція передачі керування наступному middleware або обробнику.
+ * @param {object} req HTTP-запит із заголовком Authorization.
+ * @param {object} res HTTP-відповідь із повідомленням про помилку у разі неуспішної перевірки.
+ * @param {function(): void} next Функція передачі керування наступному middleware або обробнику.
  * @returns {void}
  */
 const authMiddleware = (req, res, next) => {

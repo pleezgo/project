@@ -5,7 +5,6 @@ const pool = require('./db')
  *
  * Виконує ініціалізацію схеми в межах транзакції, створюючи таблиці users,
  * user_profiles, food_logs і custom_foods. У разі помилки виконує rollback.
- *
  * @returns {Promise<void>}
  */
 const createTables = async () => {

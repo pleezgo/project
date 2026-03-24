@@ -38,7 +38,6 @@ const PORT = process.env.PORT || 5000
  * Перед стартом сервера викликає createTables(), щоб переконатися,
  * що необхідні таблиці існують. У разі помилки запуск завершує процес
  * з кодом 1.
- *
  * @returns {Promise<void>}
  */
 const start = async () => {
