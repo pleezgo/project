@@ -11,7 +11,7 @@ module.exports = [
     files: ['src/**/*.js'],
   },
   {
-    files: ['**/*.js'],
+    files: ['src/**/*.js'],
     ...js.configs.recommended,
     languageOptions: {
       ecmaVersion: 2020,

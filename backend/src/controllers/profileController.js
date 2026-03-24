@@ -154,4 +154,10 @@ const updateProfile = async (req, res) => {
   }
 }
 
-module.exports = { getProfile, updateProfile }
+module.exports = {
+  getProfile,
+  updateProfile,
+  calcBMR,
+  calcTDEE,
+  calcCalorieGoal,
+}
