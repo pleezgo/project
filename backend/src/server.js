@@ -9,6 +9,8 @@
  * від отримання HTTP-запиту до передачі його в маршрути,
  * middleware автентифікації та контролери.
  */
+const swaggerUi = require('swagger-ui-express')
+const swaggerSpec = require('./config/swagger')
 
 const express = require('express')
 const cors = require('cors')
@@ -28,6 +30,8 @@ app.use(cors({
 app.use(express.json())
 
 app.use('/api', routes)
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 app.get('/', (req, res) => {
   res.json({ message: 'HealthLog API працює!' })
