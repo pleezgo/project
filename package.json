@@ -9,7 +9,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky",
-    "docs": "jsdoc -c jsdoc.json -R README.md"
+    "docs:clean": "rimraf docs/generated",
+    "docs:build": "jsdoc -c jsdoc.json -R README.md",
+    "docs": "npm run docs:clean && npm run docs:build"
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,7 @@
   "homepage": "https://github.com/pleezgo/project#readme",
   "devDependencies": {
     "husky": "^9.1.7",
-    "jsdoc": "^4.0.5"
+    "jsdoc": "^4.0.5",
+    "rimraf": "^6.1.3"
   }
 }
