@@ -9,6 +9,11 @@ module.exports = [
   {
     ...jsdoc.configs['flat/recommended'],
     files: ['src/**/*.js'],
+    rules: {
+      'jsdoc/check-tag-names': ['warn', {
+        definedTags: ['openapi'],
+      }],
+    },
   },
   {
     files: ['src/**/*.js'],
