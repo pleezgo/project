@@ -1,38 +1,8 @@
 import { useState, useEffect } from 'react'
 import { api } from '../api/api'
-
-/**
- * Повертає поточну дату у форматі YYYY-MM-DD.
- * @returns {string} Поточна дата для використання в API-запитах і стані компонента.
- */
-const today = () => new Date().toISOString().split('T')[0]
-
-/**
- * Додає або віднімає задану кількість днів від дати у форматі YYYY-MM-DD.
- * @param {string} dateStr Базова дата у форматі YYYY-MM-DD.
- * @param {number} n Кількість днів для зміщення.
- * @returns {string} Нова дата у форматі YYYY-MM-DD.
- */
-const addDays = (dateStr, n) => {
-  const parts = dateStr.split('-')
-  const d = new Date(+parts[0], +parts[1] - 1, +parts[2])
-  d.setDate(d.getDate() + n)
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
-}
-
-/**
- * Форматує дату для відображення в інтерфейсі українською мовою.
- * @param {string} dateStr Дата у форматі YYYY-MM-DD.
- * @returns {string} Локалізоване текстове представлення дати.
- */
-const displayDate = (dateStr) => {
-  return new Date(dateStr + 'T00:00:00').toLocaleDateString('uk-UA', {
-    weekday: 'long', day: 'numeric', month: 'long'
-  })
-}
+import { today, displayDateLong} from '../utils/dateUtils'
+import { calcMacroGoals, pct } from '../utils/nutritionUtils'
+import DateNavigator from '../components/DateNavigator'
 
 /**
  * Відображає дашборд користувача з денними показниками харчування.
@@ -69,24 +39,12 @@ export default function Dashboard() {
   if(!data) return null
 
   const { profile, food } = data
-  const calorieGoal = profile.calorie_goal || 2000
-  const proteinGoal = profile.calorie_goal ? Math.round(profile.calorie_goal * 0.25 / 4) : 125
-  const fatGoal = profile.calorie_goal ? Math.round(profile.calorie_goal * 0.30 / 9) : 67
-  const carbsGoal = profile.calorie_goal ? Math.round(profile.calorie_goal * 0.45 / 4) : 250
+  const goals = calcMacroGoals(profile.calorie_goal)
 
   const kcal = Math.round(food?.kcal || 0)
   const protein = Math.round(food?.protein || 0)
   const fat = Math.round(food?.fat || 0)
   const carbs = Math.round(food?.carbs || 0)
-  // const remaining = calorieGoal - kcal
-
-  /**
-   * Обчислює відсоток заповнення показника відносно цілі.
-   * @param {number} v Поточне значення.
-   * @param {number} max Цільове значення.
-   * @returns {number} Відсоток у межах від 0 до 100.
-   */
-  const pct = (v, max) => Math.min(100, Math.round(v / (max || 1) * 100))
 
   return (
     <div>
@@ -94,22 +52,9 @@ export default function Dashboard() {
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
         <div>
           <div style={{ fontSize:18, fontWeight:500 }}>Дашборд</div>
-          <div style={{ fontSize:13, color:'var(--text-muted)', marginTop:2 }}>{displayDate(date)}</div>
+          <div style={{ fontSize:13, color:'var(--text-muted)', marginTop:2 }}>{displayDateLong(date)}</div>
         </div>
-        <div style={{ display:'flex', alignItems:'center', border:'1px solid var(--border)' }}>
-          <button
-            onClick={() => setDate(d => addDays(d, -1))}
-            style={{ padding:'5px 12px', border:'none', borderRight:'1px solid var(--border)', background:'var(--bg-secondary)', color:'var(--text-secondary)', cursor:'pointer', fontSize:16 }}
-          >‹</button>
-          <span style={{ padding:'5px 14px', fontSize:13 }}>
-            {new Date(date + 'T00:00:00').toLocaleDateString('uk-UA', { weekday:'short', day:'numeric', month:'short' })}
-          </span>
-          <button
-            onClick={() => setDate(d => addDays(d, 1))}
-            disabled={date >= today()}
-            style={{ padding:'5px 12px', border:'none', borderLeft:'1px solid var(--border)', background:'var(--bg-secondary)', color:'var(--text-secondary)', cursor:'pointer', fontSize:16, opacity: date >= today() ? 0.3 : 1 }}
-          >›</button>
-        </div>
+        <DateNavigator date={date} onChange={setDate} />
       </div>
 
       {/* статистика */}
@@ -120,9 +65,9 @@ export default function Dashboard() {
             {kcal}<span className="stat-unit"> ккал</span>
           </div>
           <div className="stat-bar">
-            <div className="stat-bar-fill" style={{ width: pct(kcal, calorieGoal) + '%', background:'var(--accent)' }}/>
+            <div className="stat-bar-fill" style={{ width: pct(kcal, goals.kcal) + '%', background:'var(--accent)' }}/>
           </div>
-          <div className="stat-note">з {calorieGoal} ккал · залишок {Math.max(0, calorieGoal - kcal)}</div>
+          <div className="stat-note">з {goals.kcal} ккал · залишок {Math.max(0, goals.kcal - kcal)}</div>
         </div>
         <div className="stat-cell">
           <div className="stat-label" style={{ color:'var(--text-faint)' }}>Вода</div>
@@ -148,10 +93,10 @@ export default function Dashboard() {
         <div className="card">
           <div className="card-title">КБЖВ сьогодні</div>
           {[
-            ['Калорії', kcal, calorieGoal, 'ккал', 'var(--accent)'],
-            ['Білки', protein, proteinGoal, 'г', 'var(--green)'],
-            ['Жири', fat, fatGoal, 'г', 'var(--amber)'],
-            ['Вуглеводи', carbs, carbsGoal, 'г', 'var(--purple)'],
+            ['Калорії', kcal, goals.kcal, 'ккал', 'var(--accent)'],
+            ['Білки', protein, goals.protein, 'г', 'var(--green)'],
+            ['Жири', fat, goals.fat, 'г', 'var(--amber)'],
+            ['Вуглеводи', carbs, goals.carbs, 'г', 'var(--purple)'],
           ].map(([label, val, goal, unit, color]) => (
             <div key={label} style={{ marginBottom:10 }}>
               <div style={{ display:'flex', justifyContent:'space-between', fontSize:13, marginBottom:4 }}>
