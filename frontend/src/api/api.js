@@ -86,5 +86,14 @@ export const api = {
   getCustomFoods: () => request('GET', '/food/custom'),
   addFoodLog: (body) => request('POST', '/food', body),
   addCustomFood: (body) => request('POST', '/food/custom', body),
-  deleteFoodLog: (id) => request('DELETE', `/food/${id}`)
+  deleteFoodLog: (id) => request('DELETE', `/food/${id}`),
+
+  getExercises: () => request('GET', '/exercises'),
+
+  getActivityLogs: (date) => request('GET', `/activity?date=${date}`),
+  addActivityLog: (body) => request('POST', '/activity', body),
+  deleteActivityLog: (id) => request('DELETE', `/activity/${id}`),
+
+  getWeightLog: (date) => request('GET', `/weight?date=${date}`),
+  addWeightLog: (body) => request('POST', '/weight', body),
 }

@@ -18,7 +18,7 @@ require('dotenv').config()
 
 const routes = require('./routes/index')
 const createTables = require('./config/schema')
-// const seedExercises = require('./config/seed')
+const seedExercises = require('./config/seed')
 
 const app = express()
 
@@ -59,6 +59,7 @@ const PORT = process.env.PORT || 5000
 const start = async () => {
   try {
     await createTables()
+    await seedExercises()
     app.listen(PORT, () => {
       // eslint-disable-next-line no-console
       console.log(`Сервер запущено на порту ${PORT}`)

@@ -13,7 +13,7 @@
  * відображення та прикладну логіку роботи з харчуванням.
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect} from 'react'
 import { api } from '../api/api'
 import { today } from '../utils/dateUtils'
 import { calcMacroGoals, pct } from '../utils/nutritionUtils'
@@ -31,8 +31,6 @@ const MEALS = [
   { id: 'snack', label: 'Перекус' }
 ]
 
-const COLS = '1fr 44px 44px 44px 44px 60px 24px'
-
 /**
  * Сторінка щоденника харчування.
  *
@@ -47,20 +45,6 @@ export default function Food() {
   const [profile, setProfile] = useState({})
   const [showModal, setShowModal] = useState(false)
   const [currentMeal, setCurrentMeal] = useState('breakfast')
-  const [tab, setTab] = useState('search')
-  const [searchQ, setSearchQ] = useState('')
-  const [searchResults, setSearchResults] = useState([])
-  const [selectedFood, setSelectedFood] = useState(null)
-  const [amount, setAmount] = useState(100)
-  const [customForm, setCustomForm] = useState({
-    name: '',
-    kcal_per100: '',
-    protein_per100: '',
-    fat_per100: '',
-    carbs_per100: '',
-    amount: 100,
-  })
-  const searchTimer = useRef(null)
 
   /**
    * Завантажує записи харчування і профіль користувача за вказану дату.
@@ -84,99 +68,6 @@ export default function Food() {
   }, [date])
 
   /**
-   * Оновлює пошуковий запит і запускає відкладений пошук продуктів через API.
-   *
-   * Використовує debounce через setTimeout, щоб не надсилати запит
-   * на кожне натискання клавіші.
-   * @param {string} q Пошуковий рядок.
-   * @returns {void}
-   */
-  const handleSearch = (q) => {
-    setSearchQ(q)
-    clearTimeout(searchTimer.current)
-
-    if(!q.trim()) {
-      setSearchResults([])
-      return
-    }
-
-    searchTimer.current = setTimeout(async () => {
-      try {
-        const results = await api.searchFood(q)
-
-        setSearchResults(results.slice(0, 8))
-      } catch {
-        setSearchResults([])
-      }
-    }, 400)
-  }
-
-  /**
-   * Додає вибраний продукт із результатів пошуку до щоденника харчування.
-   *
-   * Перераховує харчові значення відповідно до вибраної кількості грамів,
-   * створює запис через API, закриває модальне вікно і оновлює список.
-   * @returns {Promise<void>}
-   */
-  const addSelected = async () => {
-    if(!selectedFood) return
-
-    const k = amount / 100
-
-    await api.addFoodLog({
-      log_date: date,
-      meal_type: currentMeal,
-      food_name: selectedFood.name,
-      amount_g: amount,
-      kcal: Math.round((selectedFood.kcal_per100 || 0) * k),
-      protein_g: +((selectedFood.protein_per100 || 0) * k).toFixed(1),
-      fat_g: +((selectedFood.fat_per100 || 0) * k).toFixed(1),
-      carbs_g: +((selectedFood.carbs_per100 || 0) * k).toFixed(1),
-      usda_fdc_id: selectedFood.fdcId ? String(selectedFood.fdcId) : null
-    })
-
-    closeModal()
-    load(date)
-  }
-
-  /**
-   * Додає власний продукт до щоденника і зберігає його в персональному списку користувача.
-   *
-   * Використовує дані з форми customForm, обчислює харчові значення
-   * для вибраної кількості та після успішного створення оновлює стан сторінки.
-   * @returns {Promise<void>}
-   */
-  const addCustom = async () => {
-    const { name, kcal_per100, protein_per100, fat_per100, carbs_per100, amount: amt } = customForm
-
-    if (!name || !kcal_per100) return
-
-    const k = (amt || 100) / 100
-
-    await api.addFoodLog({
-      log_date: date,
-      meal_type: currentMeal,
-      food_name: name,
-      amount_g: amt || 100,
-      kcal: Math.round(+kcal_per100 * k),
-      protein_g: +((+protein_per100 || 0) * k).toFixed(1),
-      fat_g: +((+fat_per100 || 0) * k).toFixed(1),
-      carbs_g: +((+carbs_per100 || 0) * k).toFixed(1)
-    })
-
-    await api.addCustomFood({
-      name,
-      kcal_per100: +kcal_per100,
-      protein_per100: +(protein_per100 || 0),
-      fat_per100: +(fat_per100 || 0),
-      carbs_per100: +(carbs_per100 || 0)
-    })
-
-    closeModal()
-    load(date)
-  }
-
-  /**
    * Видаляє запис харчування за ідентифікатором і перезавантажує дані сторінки.
    * @param {number|string} id Ідентифікатор запису харчування.
    * @returns {Promise<void>}
@@ -187,38 +78,11 @@ export default function Food() {
   }
 
   /**
-   * Відкриває модальне вікно додавання їжі для вибраного прийому їжі
-   * та скидає допоміжний стан форми пошуку.
-   * @param {string} meal Ідентифікатор прийому їжі.
-   * @returns {void}
-   */
-  const openModal = (meal) => {
-    setCurrentMeal(meal)
-    setShowModal(true)
-    setTab('search')
-    setSelectedFood(null)
-    setSearchQ('')
-    setSearchResults([])
-    setAmount(100)
-  }
-
-  /**
    * Закриває модальне вікно і скидає тимчасовий стан вибору продукту та форми.
    * @returns {void}
    */
   const closeModal = () => {
     setShowModal(false)
-    setSelectedFood(null)
-    setSearchQ('')
-    setSearchResults([])
-    setCustomForm({
-      name: '',
-      kcal_per100: '',
-      protein_per100: '',
-      fat_per100: '',
-      carbs_per100: '',
-      amount: 100
-    })
   }
 
   const goals = calcMacroGoals(profile.calorie_goal)
@@ -229,29 +93,6 @@ export default function Food() {
     fat: a.fat + (+i.fat_g || 0),
     carbs: a.carbs + (+i.carbs_g || 0)
   }), {kcal: 0, protein: 0, fat: 0, carbs: 0})
-
-  const preview = selectedFood
-    ? (() => {
-        const k = amount / 100
-
-        return {
-          kcal: Math.round((selectedFood.kcal_per100 || 0) * k),
-          protein: +((selectedFood.protein_per100 || 0) * k).toFixed(1),
-          fat: +((selectedFood.fat_per100 || 0) * k).toFixed(1),
-          carbs: +((selectedFood.carbs_per100 || 0) * k).toFixed(1)
-        }
-      })()
-    : null
-
-  const cellStyle = (align = 'right') => ({
-    padding: '7px 8px',
-    fontSize: 12,
-    textAlign: align,
-    color: 'var(--text-secondary)',
-    whiteSpace: 'nowrap',
-    overflow: 'hidden',
-    textOverflow: 'ellipsis'
-  })
 
   return (
     <div>

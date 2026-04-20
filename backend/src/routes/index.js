@@ -20,6 +20,10 @@ const {
   getFoodLogs, getFoodStats, addFoodLog, deleteFoodLog,
   getCustomFoods, addCustomFood, searchUSDA, getDashboard,
 } = require('../controllers/foodController')
+const {
+  getExercises, getActivityLogs, addActivityLog, deleteActivityLog,
+  getWeightLog, addWeightLog
+} = require('../controllers/activityController')
 
 /**
  * @openapi
@@ -642,5 +646,14 @@ router.post('/food/custom', auth, addCustomFood)
  *         description: Помилка сервера
  */
 router.delete('/food/:id', auth, deleteFoodLog)
+
+router.get('/exercises', auth, getExercises)
+
+router.get('/activity', auth, getActivityLogs)
+router.post('/activity', auth, addActivityLog)
+router.delete('/activity/:id', auth, deleteActivityLog)
+
+router.get('/weight', auth, getWeightLog)
+router.post('/weight', auth, addWeightLog)
 
 module.exports = router

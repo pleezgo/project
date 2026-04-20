@@ -17,6 +17,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import Dashboard from './pages/Dashboard'
 import Food from './pages/Food'
+import Activity from './pages/Activity'
 import Profile from './pages/Profile'
 import './styles/main.css'
 import './styles/components.css'
@@ -74,6 +75,7 @@ export default function App() {
           }>
             <Route index element={<Dashboard />} />
             <Route path="food" element={<Food />} />
+            <Route path="activity" element={<Activity />} />
             <Route path="profile" element={<Profile />} />
           </Route>
         </Routes>

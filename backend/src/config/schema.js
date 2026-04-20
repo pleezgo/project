@@ -70,6 +70,39 @@ const createTables = async () => {
       )
     `)
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS exercises (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(255) NOT NULL UNIQUE,
+        type VARCHAR(20) NOT NULL,
+        met NUMERIC(4,1) NOT NULL
+      )
+    `)
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS activity_logs (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        log_date DATE NOT NULL DEFAULT CURRENT_DATE,
+        exercise_id INTEGER REFERENCES exercises(id),
+        exercise_name VARCHAR(255) NOT NULL,
+        duration_min NUMERIC(6,1),
+        kcal_burned NUMERIC(7,1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `)
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS weight_logs (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        log_date DATE NOT NULL DEFAULT CURRENT_DATE,
+        weight NUMERIC(5,2) NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE (user_id, log_date)
+      )
+    `)
+
     await client.query('COMMIT')
   } catch(err) {
     await client.query('ROLLBACK')

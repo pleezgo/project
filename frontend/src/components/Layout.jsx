@@ -10,13 +10,13 @@ import '../styles/layout.css'
 const navItems = [
   {to: '/', label: 'Дашборд', end: true},
   {to: '/food', label: 'Харчування'},
+  {to: '/activity', label: 'Фізична активність'},
 ]
 
 /**
  * Майбутні розділи застосунку, які поки що недоступні в інтерфейсі.
  */
 const disabledItems = [
-  {label: 'Тренування'},
   {label: 'Гідрація'},
   {label: 'Сон'},
 ]
