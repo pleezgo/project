@@ -60,7 +60,7 @@ export default function Dashboard() {
       {/* статистика */}
       <div className="stats-row">
         <div className="stat-cell">
-          <div className="stat-label">Калорії</div>
+          <div className="stat-label">Спожито калорій</div>
           <div className="stat-value" style={{ color:'var(--accent)' }}>
             {kcal}<span className="stat-unit"> ккал</span>
           </div>
@@ -82,10 +82,14 @@ export default function Dashboard() {
           <div className="stat-note">незабаром</div>
         </div>
         <div className="stat-cell">
-          <div className="stat-label" style={{ color:'var(--text-faint)' }}>Тренування</div>
-          <div className="stat-value" style={{ color:'var(--text-placeholder)' }}>—</div>
-          <div className="stat-bar"/>
-          <div className="stat-note">незабаром</div>
+          <div className="stat-label">Спалено калорій</div>
+          <div className="stat-value" style={{ color: 'var(--accent)' }}>
+            {Math.round(data.activity?.kcal_burned || 0)}<span className="stat-unit"> ккал</span>
+          </div>
+          <div className="stat-bar">
+            <div className="stat-bar-fill" style={{ width: pct(Math.round(data.activity?.kcal_burned || 0), 500) + '%', background: 'var(--accent)' }} />
+          </div>
+          <div className="stat-note">активність - {Math.round(data.activity?.duration_min || 0)} хв</div>
         </div>
       </div>
 
@@ -113,11 +117,15 @@ export default function Dashboard() {
         </div>
 
         <div className="card">
-          <div className="card-title">Плейхолдери</div>
+          <div className="card-title">Інші показники</div>
           {[
             { title: 'Гідрація', rows: [['Випито', '— мл'], ['Ціль', '2000 мл'], ['Виконано', '—%']] },
             { title: 'Сон', rows: [['Тривалість', '— год'], ['Якість', '—'], ['Норма', '7–9 год']] },
-            { title: 'Тренування', rows: [['Спалено', '— ккал'], ['Вправ', '—'], ['Тривалість', '— хв']] },
+            { title: 'Фізична активність', rows: [
+              ['Спалено', `${Math.round(data.activity?.kcal_burned || 0)} ккал`],
+              ['Вправ', `${data.activity?.count || 0}`],
+              ['Тривалість', `${Math.round(data.activity?.duration_min || 0)} хв`]
+            ]},
           ].map(block => (
             <div key={block.title} style={{ marginBottom:12 }}>
               <div style={{ fontSize:11, fontWeight:500, textTransform:'uppercase', letterSpacing:'0.05em', color:'var(--text-placeholder)', marginBottom:6 }}>

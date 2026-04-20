@@ -253,46 +253,7 @@ const searchUSDA = async (req, res) => {
   })
 }
 
-/**
- * Повертає зведені дані для головної сторінки користувача за обрану дату.
- *
- * Паралельно отримує профіль користувача та сумарні показники харчування
- * за день, після чого формує єдину відповідь для dashboard.
- * @param {object} req HTTP-запит з необов'язковою датою в query-параметрі.
- * @param {object} res HTTP-відповідь зі зведеними даними профілю та харчування.
- * @returns {Promise<void>}
- */
-const getDashboard = async (req, res) => {
-  const date = req.query.date || new Date().toISOString().split('T')[0]
-  try {
-    const [profile, food] = await Promise.all([
-      pool.query(
-        'SELECT * FROM user_profiles WHERE user_id = $1',
-        [req.user.id]
-      ),
-      pool.query(
-        `SELECT
-          COALESCE(SUM(kcal), 0)      AS kcal,
-          COALESCE(SUM(protein_g), 0) AS protein,
-          COALESCE(SUM(fat_g), 0)     AS fat,
-          COALESCE(SUM(carbs_g), 0)   AS carbs
-         FROM food_logs
-         WHERE user_id = $1 AND log_date = $2`,
-        [req.user.id, date]
-      )
-    ])
-
-    res.json({
-      profile: profile.rows[0] || {},
-      food: food.rows[0]
-    })
-  } catch (err) {
-    console.error('Dashboard error:', err)
-    res.status(500).json({ error: 'Помилка сервера' })
-  }
-}
-
 module.exports = {
   getFoodLogs, getFoodStats, addFoodLog, deleteFoodLog,
-  getCustomFoods, addCustomFood, searchUSDA, getDashboard,
+  getCustomFoods, addCustomFood, searchUSDA,
 }

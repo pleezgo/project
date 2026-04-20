@@ -18,8 +18,10 @@ const { register, login } = require('../controllers/authController')
 const { getProfile, updateProfile } = require('../controllers/profileController')
 const {
   getFoodLogs, getFoodStats, addFoodLog, deleteFoodLog,
-  getCustomFoods, addCustomFood, searchUSDA, getDashboard,
+  getCustomFoods, addCustomFood, searchUSDA,
 } = require('../controllers/foodController')
+
+const { getDashboard } = require('../controllers/dashboardController')
 const {
   getExercises, getActivityLogs, addActivityLog, deleteActivityLog,
   getWeightLog, addWeightLog

@@ -5,7 +5,7 @@ const getExercises = async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM exercises ORDER BY name ASC')
     res.json(result.rows)
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Помилка сервера' })
   }
 }
@@ -20,7 +20,7 @@ const getActivityLogs = async (req, res) => {
       [req.user.id, date]
     )
     res.json(result.rows)
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Помилка сервера' })
   }
 }
@@ -42,7 +42,7 @@ const addActivityLog = async (req, res) => {
        exercise_id || null, exercise_name, duration_min, kcal_burned || 0]
     )
     res.status(201).json(result.rows[0])
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Помилка сервера' })
   }
 }
@@ -57,7 +57,7 @@ const deleteActivityLog = async (req, res) => {
       return res.status(404).json({ error: 'Запис не знайдено' })
     }
     res.json({ message: 'Видалено' })
-  } catch (err) {
+  } catch{
     res.status(500).json({ error: 'Помилка сервера' })
   }
 }
@@ -70,7 +70,7 @@ const getWeightLog = async (req, res) => {
       [req.user.id, date]
     )
     res.json(result.rows[0] || null)
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: 'Помилка сервера' })
   }
 }
