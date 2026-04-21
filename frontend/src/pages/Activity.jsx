@@ -12,7 +12,7 @@ export default function Activity() {
   const [profile, setProfile] = useState({})
   const [weight, setWeight] = useState('')
   const [savedWeight, setSavedWeight] = useState(null)
-  const [modal, setModal] = useState(false)
+  const [modalType, setModalType] = useState(null)
 
   const load = async (d) => {
     try {
@@ -36,6 +36,19 @@ export default function Activity() {
   useEffect(() => { load(date) }, [date])
   const totalKcal = Math.round(logs.reduce((s, l) => s + (+l.kcal_burned || 0), 0))
   const totalDuration = Math.round(logs.reduce((s, l) => s + (+l.duration_min || 0), 0))
+  const cardioLogs = logs.filter(l =>
+    l.category === 'cardio_distance' ||
+    l.category === 'cardio_time' ||
+    l.category === 'isometric'
+  )
+  const strengthLogs = logs.filter(l =>
+    l.category === 'bodyweight_reps' ||
+    l.category === 'weighted_reps'
+  )
+
+  const cardioKcal = cardioLogs.reduce((s, l) => s + (+l.kcal_burned || 0), 0)
+  const strengthKcal = strengthLogs.reduce((s, l) => s + (+l.kcal_burned || 0), 0)
+  const cardioDuration = cardioLogs.reduce((s, l) => s + (+l.duration_min || 0), 0)
 
   const handleDelete = async (id) => {
     await api.deleteActivityLog(id)
@@ -75,7 +88,7 @@ export default function Activity() {
         <div className="stat-cell">
           <div className="stat-label">Кардіо</div>
           <div className="stat-value" style={{ color: 'var(--red)' }}>
-            {totalDuration}<span className="stat-unit"> хв</span>
+            {Math.round(cardioDuration)}<span className="stat-unit"> хв</span>
           </div>
           <div className="stat-bar">
             <div className="stat-bar-fill" style={{ width: pct(totalDuration, 60) + '%', background: 'var(--red)' }} />
@@ -83,10 +96,14 @@ export default function Activity() {
           <div className="stat-note">за сьогодні</div>
         </div>
         <div className="stat-cell">
-          <div className="stat-label" style={{ color: 'var(--text-faint)' }}>Силові</div>
-          <div className="stat-value" style={{ color: 'var(--text-placeholder)' }}>—</div>
-          <div className="stat-bar" />
-          <div className="stat-note">незабаром</div>
+          <div className="stat-label">Силові</div>
+          <div className="stat-value" style={{ color: 'var(--purple)' }}>
+            {Math.round(strengthKcal)}<span className="stat-unit"> ккал</span>
+          </div>
+          <div className="stat-bar">
+            <div className="stat-bar-fill" style={{ width: pct(Math.round(strengthKcal), 300) + '%', background: 'var(--purple)' }} />
+          </div>
+          <div className="stat-note">за сьогодні</div>
         </div>
         <div className="stat-cell">
           <div className="stat-label">Активностей загалом</div>
@@ -97,36 +114,65 @@ export default function Activity() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 12 }}>
       {/* Список активності */}
       <div style={{ border: '1px solid var(--border)' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 100px 80px', padding: '8px 0', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
-        <span style={{ padding: '0 8px 0 12px', fontSize: 13, fontWeight: 500 }}>Кардіо</span>
-        <span style={{ padding: '0 8px', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', textAlign: 'right' }}>{totalDuration} хв</span>
-        <span style={{ padding: '0 8px', fontSize: 10, color: 'var(--text-muted)', textAlign: 'right' }}>{totalKcal} ккал</span>
-        <button
-          onClick={() => setModal(true)}
-          style={{ fontSize: 12, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'right', padding: '0 8px' }}
-        >+ додати</button>
-      </div>
+        {/* Заголовок кардіо */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 80px 80px', padding: '8px 0', background: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
+          <span style={{ padding: '0 8px 0 12px', fontSize: 13, fontWeight: 500 }}>Кардіо</span>
+          <span style={{ padding: '0 8px', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', textAlign: 'right' }}>час / дист.</span>
+          <span style={{ padding: '0 8px', fontSize: 12, color: 'var(--text-muted)', textAlign: 'right' }}>{Math.round(cardioKcal)} ккал</span>
+          <button
+            onClick={() => setModalType('cardio')}
+            style={{ fontSize: 12, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'right', padding: '0 8px' }}
+          >+ додати</button>
+        </div>
 
-        {logs.length === 0 && (
+        {cardioLogs.length === 0 && (
           <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--text-faint)' }}>Немає записів</div>
         )}
 
-        {logs.map(log => (
-          <div key={log.id} style={{ display: 'grid', gridTemplateColumns: '1fr 80px 100px 80px', borderTop: '1px solid var(--border-light)', alignItems: 'center' }}>
-            <div style={{ padding: '7px 8px 7px 12px', fontSize: 13 }}>{log.exercise_name}</div>
-            <div style={{ padding: '7px 8px', fontSize: 12, color: 'var(--text-muted)', textAlign: 'right' }}>{log.duration_min} хв</div>
-            <div style={{ padding: '7px 8px', fontSize: 12, color: 'var(--accent)', fontWeight: 500, textAlign: 'right' }}>{Math.round(log.kcal_burned)} ккал</div>
-            <div onClick={() => handleDelete(log.id)} style={{ padding: '7px 8px', fontSize: 12, color: 'var(--text-faint)', cursor: 'pointer', textAlign: 'center' }}>×</div>
-          </div>
-        ))}
+        {cardioLogs.map(log => {
+          const detail = log.distance_km
+            ? `${(+log.distance_km).toFixed(1)} км`
+            : log.duration_min
+            ? `${log.duration_min} хв`
+            : '—'
+          return (
+            <div key={log.id} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 80px 80px', borderTop: '1px solid var(--border-light)', alignItems: 'center' }}>
+              <div style={{ padding: '7px 8px 7px 12px', fontSize: 13 }}>{log.exercise_name}</div>
+              <div style={{ padding: '7px 8px', fontSize: 12, color: 'var(--text-muted)', textAlign: 'right' }}>{detail}</div>
+              <div style={{ padding: '7px 8px', fontSize: 12, color: 'var(--accent)', fontWeight: 500, textAlign: 'right' }}>{Math.round(log.kcal_burned)} ккал</div>
+              <div onClick={() => handleDelete(log.id)} style={{ padding: '7px 8px', fontSize: 12, color: 'var(--text-faint)', cursor: 'pointer', textAlign: 'center' }}>×</div>
+            </div>
+          )
+        })}
 
-        {/* Плейсхолдер силові */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 100px 80px', padding: '8px 0', background: 'var(--bg-secondary)', borderTop: '1px solid var(--border)', alignItems: 'center' }}>
-          <span style={{ padding: '0 8px 0 12px', fontSize: 13, fontWeight: 500, color: 'var(--text-placeholder)' }}>Силові</span>
-          <div />
-          <span style={{ padding: '0 8px', fontSize: 12, color: 'var(--text-placeholder)', textAlign: 'right' }}>— ккал</span>
-          <span style={{ padding: '0 8px', fontSize: 12, color: 'var(--text-placeholder)', textAlign: 'right' }}>незабаром</span>
+        {/* Заголовок силові */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px 80px 80px', padding: '8px 0', background: 'var(--bg-secondary)', borderTop: '1px solid var(--border)', alignItems: 'center' }}>
+          <span style={{ padding: '0 8px 0 12px', fontSize: 13, fontWeight: 500 }}>Силові</span>
+          <span style={{ padding: '0 8px', fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', textAlign: 'right' }}>підх.×повт.</span>
+          <span style={{ padding: '0 8px', fontSize: 12, color: 'var(--text-muted)', textAlign: 'right' }}>{Math.round(strengthKcal)} ккал</span>
+          <button
+            onClick={() => setModalType('strength')}
+            style={{ fontSize: 12, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'right', padding: '0 8px' }}
+          >+ додати</button>
         </div>
+
+        {strengthLogs.length === 0 && (
+          <div style={{ padding: '8px 12px', fontSize: 12, color: 'var(--text-faint)' }}>Немає записів</div>
+        )}
+
+        {strengthLogs.map(log => {
+          const detail = log.sets && log.reps
+            ? `${log.sets}×${log.reps}${log.weight_used_kg ? ` · ${log.weight_used_kg}кг` : ''}`
+            : '—'
+          return (
+            <div key={log.id} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 80px 80px', borderTop: '1px solid var(--border-light)', alignItems: 'center' }}>
+              <div style={{ padding: '7px 8px 7px 12px', fontSize: 13 }}>{log.exercise_name}</div>
+              <div style={{ padding: '7px 8px', fontSize: 12, color: 'var(--text-muted)', textAlign: 'right' }}>{detail}</div>
+              <div style={{ padding: '7px 8px', fontSize: 12, color: 'var(--purple)', fontWeight: 500, textAlign: 'right' }}>{Math.round(log.kcal_burned)} ккал</div>
+              <div onClick={() => handleDelete(log.id)} style={{ padding: '7px 8px', fontSize: 12, color: 'var(--text-faint)', cursor: 'pointer', textAlign: 'center' }}>×</div>
+            </div>
+          )
+        })}
       </div>
 
       {/* Бічна панель */}
@@ -204,13 +250,21 @@ export default function Activity() {
       ))}
       <div style={{ fontSize: 11, color: 'var(--text-placeholder)', marginTop: 8, textAlign: 'right' }}>незабаром</div>
     </div>
-    {modal && (
+    {modalType && (
       <ActivityModal
         date={date}
-        exercises={exercises}
+        exercises={exercises.filter(ex => {
+          if (modalType === 'cardio') {
+            return ['cardio_distance', 'cardio_time', 'isometric'].includes(ex.category)
+          }
+          if (modalType === 'strength') {
+            return ['bodyweight_reps', 'weighted_reps'].includes(ex.category)
+          }
+          return true
+        })}
         profile={profile}
-        onClose={() => setModal(false)}
-        onSaved={() => { setModal(false); load(date) }}
+        onClose={() => setModalType(null)}
+        onSaved={() => { setModalType(null); load(date) }}
       />
     )}
   </div>

@@ -74,8 +74,15 @@ const createTables = async () => {
       CREATE TABLE IF NOT EXISTS exercises (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL UNIQUE,
-        type VARCHAR(20) NOT NULL,
-        met NUMERIC(4,1) NOT NULL
+        category VARCHAR(30) NOT NULL,
+        met_low NUMERIC(4,1),
+        met_moderate NUMERIC(4,1) NOT NULL,
+        met_high NUMERIC(4,1),
+        supports_duration BOOLEAN DEFAULT FALSE,
+        supports_distance BOOLEAN DEFAULT FALSE,
+        supports_sets_reps BOOLEAN DEFAULT FALSE,
+        supports_weight BOOLEAN DEFAULT FALSE,
+        seconds_per_rep INTEGER
       )
     `)
 
@@ -86,7 +93,13 @@ const createTables = async () => {
         log_date DATE NOT NULL DEFAULT CURRENT_DATE,
         exercise_id INTEGER REFERENCES exercises(id),
         exercise_name VARCHAR(255) NOT NULL,
+        category VARCHAR(30) NOT NULL,
         duration_min NUMERIC(6,1),
+        distance_km NUMERIC(6,2),
+        sets INTEGER,
+        reps INTEGER,
+        weight_used_kg NUMERIC(5,1),
+        intensity VARCHAR(20) DEFAULT 'moderate',
         kcal_burned NUMERIC(7,1) DEFAULT 0,
         created_at TIMESTAMP DEFAULT NOW()
       )

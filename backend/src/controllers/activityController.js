@@ -1,5 +1,5 @@
 const pool = require('../config/db')
-const { calcBMR, calcTDEE, calcCalorieGoal } = require('../utils/calculations')
+const { calcBMR, calcTDEE, calcCalorieGoal, calcExerciseKcal } = require('../utils/calculations')
 
 const getExercises = async (req, res) => {
   try {
@@ -26,23 +26,76 @@ const getActivityLogs = async (req, res) => {
 }
 
 const addActivityLog = async (req, res) => {
-  const { log_date, exercise_id, exercise_name, duration_min, kcal_burned } = req.body
+  const {
+    log_date, exercise_id,
+    duration_min, distance_km,
+    sets, reps, weight_used_kg,
+    intensity
+  } = req.body
 
-  if (!exercise_name || !duration_min) {
-    return res.status(400).json({ error: 'Вправа та тривалість обовʼязкові' })
+  if (!exercise_id) {
+    return res.status(400).json({ error: 'Вправа обовʼязкова' })
   }
 
   try {
+    // Отримуємо дані вправи і вагу користувача з БД
+    const [exerciseRes, profileRes] = await Promise.all([
+      pool.query('SELECT * FROM exercises WHERE id = $1', [exercise_id]),
+      pool.query('SELECT weight FROM user_profiles WHERE user_id = $1', [req.user.id])
+    ])
+
+    const exercise = exerciseRes.rows[0]
+    if (!exercise) {
+      return res.status(404).json({ error: 'Вправу не знайдено' })
+    }
+
+    const userWeight = profileRes.rows[0]?.weight
+
+    // Валідація параметрів залежно від категорії
+    const needsDuration = ['cardio_time', 'isometric'].includes(exercise.category)
+    const needsRepsOrDuration = exercise.category === 'cardio_distance'
+    const needsSetsReps = ['bodyweight_reps', 'weighted_reps'].includes(exercise.category)
+
+    if (needsDuration && !duration_min) {
+      return res.status(400).json({ error: 'Тривалість обовʼязкова' })
+    }
+    if (needsRepsOrDuration && !duration_min && !distance_km) {
+      return res.status(400).json({ error: 'Введіть час або дистанцію' })
+    }
+    if (needsSetsReps && (!sets || !reps)) {
+      return res.status(400).json({ error: 'Введіть підходи і повторення' })
+    }
+
+    // Розрахунок калорій
+    const kcal = calcExerciseKcal(exercise, {
+      duration_min, distance_km, sets, reps, weight_used_kg, intensity
+    }, userWeight)
+
     const result = await pool.query(
       `INSERT INTO activity_logs
-        (user_id, log_date, exercise_id, exercise_name, duration_min, kcal_burned)
-       VALUES ($1, $2, $3, $4, $5, $6)
+        (user_id, log_date, exercise_id, exercise_name, category,
+         duration_min, distance_km, sets, reps, weight_used_kg,
+         intensity, kcal_burned)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
        RETURNING *`,
-      [req.user.id, log_date || new Date().toISOString().split('T')[0],
-       exercise_id || null, exercise_name, duration_min, kcal_burned || 0]
+      [
+        req.user.id,
+        log_date || new Date().toISOString().split('T')[0],
+        exercise_id,
+        exercise.name,
+        exercise.category,
+        duration_min || null,
+        distance_km || null,
+        sets || null,
+        reps || null,
+        weight_used_kg || null,
+        intensity || 'moderate',
+        kcal
+      ]
     )
     res.status(201).json(result.rows[0])
-  } catch {
+  } catch (err) {
+    console.error('addActivityLog error:', err)
     res.status(500).json({ error: 'Помилка сервера' })
   }
 }
