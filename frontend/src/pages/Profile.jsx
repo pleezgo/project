@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { api } from '../api/api'
+import { calcActivityGoal } from '../utils/activityUtils'
 
 /**
  * Доступні рівні фізичної активності для налаштування профілю користувача.
@@ -38,7 +39,8 @@ export default function Profile() {
     height: '',
     activity: 'moderate',
     goal: 'maintain',
-    water_goal: 2000
+    water_goal: 2000,
+    activity_goal: ''
   })
   const [profile, setProfile] = useState(null)
   const [saved, setSaved] = useState(false)
@@ -57,6 +59,7 @@ export default function Profile() {
           activity: p.activity || 'moderate',
           goal: p.goal || 'maintain',
           water_goal: p.water_goal || 2000,
+          activity_goal: p.activity_goal || '',
         })
       })
       .catch(err => console.error(err))
@@ -84,7 +87,8 @@ export default function Profile() {
         age: +form.age,
         weight: +form.weight,
         height: +form.height,
-        water_goal: +form.water_goal
+        water_goal: +form.water_goal,
+        activity_goal: form.activity_goal === '' ? null : +form.activity_goal,
       })
 
       setProfile(p)
@@ -176,13 +180,27 @@ export default function Profile() {
             </select>
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Ціль</label>
-            <select className="form-select" {...f('goal')}>
-              {GOALS.map(g => (
-                <option key={g.value} value={g.value}>{g.label}</option>
-              ))}
-            </select>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Ціль</label>
+              <select className="form-select" {...f('goal')}>
+                {GOALS.map(g => (
+                  <option key={g.value} value={g.value}>{g.label}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Ціль активності (ккал/день)</label>
+              <input
+                type="number"
+                className="form-input"
+                {...f('activity_goal')}
+                placeholder={`Рекоменд. ${calcActivityGoal(form.goal)}`}
+                step="50"
+                min="0"
+              />
+            </div>
           </div>
 
           <div className="form-group">

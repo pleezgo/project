@@ -26,17 +26,18 @@ const createTables = async () => {
       CREATE TABLE IF NOT EXISTS user_profiles (
         id SERIAL PRIMARY KEY,
         user_id INTEGER UNIQUE REFERENCES users(id) ON DELETE CASCADE,
-        age          INTEGER,
-        sex          VARCHAR(10),
-        weight       NUMERIC(5,2),
-        height       NUMERIC(5,2),
-        activity     VARCHAR(20) DEFAULT 'moderate',
-        goal         VARCHAR(20) DEFAULT 'maintain',
-        water_goal   INTEGER DEFAULT 2000,
-        bmr          INTEGER,
-        tdee         INTEGER,
-        calorie_goal INTEGER,
-        updated_at   TIMESTAMP DEFAULT NOW()
+        age           INTEGER,
+        sex           VARCHAR(10),
+        weight        NUMERIC(5,2),
+        height        NUMERIC(5,2),
+        activity      VARCHAR(20) DEFAULT 'moderate',
+        goal          VARCHAR(20) DEFAULT 'maintain',
+        water_goal    INTEGER DEFAULT 2000,
+        activity_goal INTEGER,
+        bmr           INTEGER,
+        tdee          INTEGER,
+        calorie_goal  INTEGER,
+        updated_at    TIMESTAMP DEFAULT NOW()
       )
     `)
 

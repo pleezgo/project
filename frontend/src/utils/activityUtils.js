@@ -62,3 +62,13 @@ export const isCardio = (category) => {
 export const isStrength = (category) => {
   return category === 'bodyweight_reps' || category === 'weighted_reps' || category === 'isometric'
 }
+
+/**
+ * Розраховує рекомендовану ціль активності (ккал/день) на основі цілі користувача.
+ * Базується на рекомендаціях ВООЗ: 150-300 хв помірної активності на тиждень.
+ */
+export const calcActivityGoal = (goal) => {
+  if (goal === 'lose') return 400
+  if (goal === 'gain') return 200
+  return 300
+}

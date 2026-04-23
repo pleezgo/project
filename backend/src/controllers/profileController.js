@@ -55,7 +55,7 @@ const getProfile = async (req, res) => {
  * @returns {Promise<void>}
  */  
 const updateProfile = async (req, res) => {
-  const { age, sex, weight, height, activity, goal, water_goal, name } = req.body
+  const { age, sex, weight, height, activity, goal, water_goal, activity_goal, name } = req.body
 
   try {
     let bmr = null, tdee = null, calorie_goal = null
@@ -68,12 +68,13 @@ const updateProfile = async (req, res) => {
     await pool.query(
       `UPDATE user_profiles SET
         age = $1, sex = $2, weight = $3, height = $4,
-        activity = $5, goal = $6, water_goal = $7,
-        bmr = $8, tdee = $9, calorie_goal = $10,
+        activity = $5, goal = $6, water_goal = $7, activity_goal = $8,
+        bmr = $9, tdee = $10, calorie_goal = $11,
         updated_at = NOW()
-       WHERE user_id = $11`,
+      WHERE user_id = $12`,
       [age, sex, weight, height, activity, goal,
-       water_goal || 2000, bmr, tdee, calorie_goal, req.user.id]
+      water_goal || 2000, activity_goal || null,
+      bmr, tdee, calorie_goal, req.user.id]
     )
 
     if (name) {

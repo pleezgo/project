@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { api } from '../api/api'
 import { today, displayDateLong} from '../utils/dateUtils'
 import { calcMacroGoals, pct } from '../utils/nutritionUtils'
+import { calcActivityGoal } from '../utils/activityUtils'
 import DateNavigator from '../components/DateNavigator'
 
 /**
@@ -40,6 +41,7 @@ export default function Dashboard() {
 
   const { profile, food } = data
   const goals = calcMacroGoals(profile.calorie_goal)
+  const activityGoal = profile.activity_goal || calcActivityGoal(profile.goal)
 
   const kcal = Math.round(food?.kcal || 0)
   const protein = Math.round(food?.protein || 0)
@@ -87,9 +89,9 @@ export default function Dashboard() {
             {Math.round(data.activity?.kcal_burned || 0)}<span className="stat-unit"> ккал</span>
           </div>
           <div className="stat-bar">
-            <div className="stat-bar-fill" style={{ width: pct(Math.round(data.activity?.kcal_burned || 0), 500) + '%', background: 'var(--accent)' }} />
+            <div className="stat-bar-fill" style={{ width: pct(Math.round(data.activity?.kcal_burned || 0), activityGoal) + '%', background: 'var(--accent)' }} />
           </div>
-          <div className="stat-note">активність - {Math.round(data.activity?.duration_min || 0)} хв</div>
+          <div className="stat-note">з {activityGoal} ккал - залишок {Math.max(0, activityGoal - Math.round(data.activity?.kcal_burned || 0))}</div>
         </div>
       </div>
 

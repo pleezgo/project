@@ -79,4 +79,10 @@ const calcExerciseKcal = (exercise, params, userWeight) => {
   return 0
 }
 
-module.exports = { activityFactors, calcBMR, calcTDEE, calcCalorieGoal, pickMET, calcExerciseKcal }
+const calcActivityGoal = (goal) => {
+  if (goal === 'lose') return 400
+  if (goal === 'gain') return 200
+  return 300
+}
+
+module.exports = { activityFactors, calcBMR, calcTDEE, calcCalorieGoal, pickMET, calcExerciseKcal, calcActivityGoal }

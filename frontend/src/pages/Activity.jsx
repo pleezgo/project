@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { api } from '../api/api'
 import { today } from '../utils/dateUtils'
 import { pct } from '../utils/nutritionUtils'
+import { calcActivityGoal } from '../utils/activityUtils'
 import DateNavigator from '../components/DateNavigator'
 
 export default function Activity() {
@@ -35,6 +36,7 @@ export default function Activity() {
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { load(date) }, [date])
   const totalKcal = Math.round(logs.reduce((s, l) => s + (+l.kcal_burned || 0), 0))
+  const activityGoal = profile?.activity_goal || calcActivityGoal(profile?.goal)
   const totalDuration = Math.round(logs.reduce((s, l) => s + (+l.duration_min || 0), 0))
   const cardioLogs = logs.filter(l =>
     l.category === 'cardio_distance' ||
@@ -81,9 +83,9 @@ export default function Activity() {
             {totalKcal}<span className="stat-unit"> ккал</span>
           </div>
           <div className="stat-bar">
-            <div className="stat-bar-fill" style={{ width: pct(totalKcal, 500) + '%', background: 'var(--accent)' }} />
+            <div className="stat-bar-fill" style={{ width: pct(totalKcal, activityGoal) + '%', background: 'var(--accent)' }} />
           </div>
-          <div className="stat-note">за сьогодні</div>
+          <div className="stat-note">ціль: {activityGoal} ккал</div>
         </div>
         <div className="stat-cell">
           <div className="stat-label">Кардіо</div>
@@ -162,7 +164,7 @@ export default function Activity() {
 
         {strengthLogs.map(log => {
           const detail = log.sets && log.reps
-            ? `${log.sets}×${log.reps}${log.weight_used_kg ? ` · ${log.weight_used_kg}кг` : ''}`
+            ? `${log.sets}×${log.reps}${log.weight_used_kg ? ` - ${log.weight_used_kg}кг` : ''}`
             : '—'
           return (
             <div key={log.id} style={{ display: 'grid', gridTemplateColumns: '1fr 120px 80px 80px', borderTop: '1px solid var(--border-light)', alignItems: 'center' }}>
