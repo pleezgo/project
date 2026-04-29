@@ -117,6 +117,32 @@ const createTables = async () => {
       )
     `)
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS hydration_logs (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        log_date DATE NOT NULL DEFAULT CURRENT_DATE,
+        amount_ml INTEGER NOT NULL CHECK (amount_ml > 0 AND amount_ml <= 5000),
+        drink_type VARCHAR(20) DEFAULT 'water',
+        logged_at TIMESTAMP DEFAULT NOW()
+      )
+    `)
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS sleep_logs (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        log_date DATE NOT NULL,
+        sleep_type VARCHAR(20) DEFAULT 'night',
+        sleep_start TIMESTAMPTZ NOT NULL,
+        sleep_end TIMESTAMPTZ NOT NULL,
+        duration_min INTEGER NOT NULL CHECK (duration_min > 0 AND duration_min <= 1440),
+        quality INTEGER CHECK (quality >= 1 AND quality <= 5),
+        notes TEXT,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `)
+
     await client.query('COMMIT')
   } catch(err) {
     await client.query('ROLLBACK')

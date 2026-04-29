@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { api } from '../api/api'
 import { calcActivityGoal } from '../utils/activityUtils'
+import { calcWaterGoal } from '../utils/hydrationUtils'
 
 /**
  * Доступні рівні фізичної активності для налаштування профілю користувача.
@@ -39,7 +40,6 @@ export default function Profile() {
     height: '',
     activity: 'moderate',
     goal: 'maintain',
-    water_goal: 2000,
     activity_goal: ''
   })
   const [profile, setProfile] = useState(null)
@@ -58,7 +58,6 @@ export default function Profile() {
           height: p.height || '',
           activity: p.activity || 'moderate',
           goal: p.goal || 'maintain',
-          water_goal: p.water_goal || 2000,
           activity_goal: p.activity_goal || '',
         })
       })
@@ -87,7 +86,6 @@ export default function Profile() {
         age: +form.age,
         weight: +form.weight,
         height: +form.height,
-        water_goal: +form.water_goal,
         activity_goal: form.activity_goal === '' ? null : +form.activity_goal,
       })
 
@@ -203,11 +201,6 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Норма води (мл/день)</label>
-            <input type="number" className="form-input" {...f('water_goal')} placeholder="2000" step="100" />
-          </div>
-
           <button className="btn btn-primary w-full" onClick={save}>
             {saved ? 'Збережено' : 'Зберегти'}
           </button>
@@ -258,6 +251,7 @@ export default function Profile() {
                 ['BMR (базовий обмін)', `${profile.bmr} ккал`],
                 ['TDEE (денна норма)', `${profile.tdee} ккал`],
                 ['Ціль калорій', `${profile.calorie_goal} ккал/день`],
+                ['Вода', `${calcWaterGoal(profile.weight, profile.activity)} мл/день`],
                 ['Білки', `${Math.round(profile.calorie_goal * 0.25 / 4)} г`],
                 ['Жири', `${Math.round(profile.calorie_goal * 0.30 / 9)} г`],
                 ['Вуглеводи', `${Math.round(profile.calorie_goal * 0.45 / 4)} г`]

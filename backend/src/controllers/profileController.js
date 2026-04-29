@@ -55,7 +55,7 @@ const getProfile = async (req, res) => {
  * @returns {Promise<void>}
  */  
 const updateProfile = async (req, res) => {
-  const { age, sex, weight, height, activity, goal, water_goal, activity_goal, name } = req.body
+  const { age, sex, weight, height, activity, goal, activity_goal, name } = req.body
 
   try {
     let bmr = null, tdee = null, calorie_goal = null
@@ -68,12 +68,12 @@ const updateProfile = async (req, res) => {
     await pool.query(
       `UPDATE user_profiles SET
         age = $1, sex = $2, weight = $3, height = $4,
-        activity = $5, goal = $6, water_goal = $7, activity_goal = $8,
-        bmr = $9, tdee = $10, calorie_goal = $11,
+        activity = $5, goal = $6, activity_goal = $7,
+        bmr = $8, tdee = $9, calorie_goal = $10,
         updated_at = NOW()
-      WHERE user_id = $12`,
+      WHERE user_id = $11`,
       [age, sex, weight, height, activity, goal,
-      water_goal || 2000, activity_goal || null,
+      activity_goal || null,
       bmr, tdee, calorie_goal, req.user.id]
     )
 
@@ -108,10 +108,53 @@ const updateProfile = async (req, res) => {
   }
 }
 
+/**
+ * Оновлює ціль гідрації користувача.
+ * null — повернутись до автоматичного розрахунку.
+ */
+const updateWaterGoal = async (req, res) => {
+  const { water_goal } = req.body
+
+  // null або явно null — очищення до автоматичного
+  if (water_goal === null) {
+    try {
+      await pool.query(
+        `UPDATE user_profiles SET water_goal = NULL, updated_at = NOW() WHERE user_id = $1`,
+        [req.user.id]
+      )
+      return res.json({ water_goal: null })
+    } catch (err) {
+      console.error('updateWaterGoal error:', err)
+      return res.status(500).json({ error: 'Помилка сервера' })
+    }
+  }
+
+  // Валідація числового значення
+  const value = +water_goal
+  if (!value || value <= 0) {
+    return res.status(400).json({ error: 'Ціль має бути більше 0' })
+  }
+  if (value > 10000) {
+    return res.status(400).json({ error: 'Максимум 10000 мл/день' })
+  }
+
+  try {
+    await pool.query(
+      `UPDATE user_profiles SET water_goal = $1, updated_at = NOW() WHERE user_id = $2`,
+      [value, req.user.id]
+    )
+    res.json({ water_goal: value })
+  } catch (err) {
+    console.error('updateWaterGoal error:', err)
+    res.status(500).json({ error: 'Помилка сервера' })
+  }
+}
+
 module.exports = {
   getProfile,
   updateProfile,
   calcBMR,
   calcTDEE,
   calcCalorieGoal,
+  updateWaterGoal,
 }

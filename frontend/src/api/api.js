@@ -55,7 +55,7 @@ const request = async (method, path, body = null) => {
   const options = {
     method,
     headers: getHeaders()
-  }
+  } 
   if(body) options.body = JSON.stringify(body)
 
   const res = await fetch(`${BASE_URL}${path}`, options)
@@ -77,6 +77,7 @@ export const api = {
 
   getProfile: () => request('GET', '/profile'),
   updateProfile: (body) => request('PUT', '/profile', body),
+  updateWaterGoal: (body) => request('PATCH', '/profile/water-goal', body),
 
   getDashboard: (date) => request('GET', `/dashboard?date=${date}`),
 
@@ -96,4 +97,14 @@ export const api = {
 
   getWeightLog: (date) => request('GET', `/weight?date=${date}`),
   addWeightLog: (body) => request('POST', '/weight', body),
+  
+  getHydration: (date) => request('GET', `/hydration/${date}`),
+  addHydration: (body) => request('POST', '/hydration', body),
+  deleteHydration: (id) => request('DELETE', `/hydration/${id}`),
+  
+  getSleep: (date) => request('GET', `/sleep/${date}`),
+  addSleep: (body) => request('POST', '/sleep', body),
+  updateSleep: (id, body) => request('PATCH', `/sleep/${id}`, body),
+  deleteSleep: (id) => request('DELETE', `/sleep/${id}`),
+  getSleepCalendar: (month) => request('GET', `/sleep/calendar?month=${month}`),
 }

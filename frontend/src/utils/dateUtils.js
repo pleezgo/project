@@ -3,7 +3,13 @@
  * Повертає поточну дату у форматі YYYY-MM-DD.
  * @returns {string} Поточна дата для використання в API-запитах і стані компонента.
  */
-export const today = () => new Date().toISOString().split('T')[0]
+export const today = () => {
+  const d = new Date()
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
 
 /**
  * Додає або віднімає задану кількість днів від дати у форматі YYYY-MM-DD.

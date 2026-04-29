@@ -11,14 +11,14 @@ const navItems = [
   {to: '/', label: 'Дашборд', end: true},
   {to: '/food', label: 'Харчування'},
   {to: '/activity', label: 'Фізична активність'},
+  {to: '/hydration', label: 'Гідрація'},
+  {to: '/sleep', label: 'Сон'},
 ]
 
 /**
  * Майбутні розділи застосунку, які поки що недоступні в інтерфейсі.
  */
 const disabledItems = [
-  {label: 'Гідрація'},
-  {label: 'Сон'},
 ]
 
 /**

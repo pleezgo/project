@@ -15,7 +15,7 @@ const router = express.Router()
 const auth = require('../middleware/auth')
 
 const { register, login } = require('../controllers/authController')
-const { getProfile, updateProfile } = require('../controllers/profileController')
+const { getProfile, updateProfile, updateWaterGoal } = require('../controllers/profileController')
 const {
   getFoodLogs, getFoodStats, addFoodLog, deleteFoodLog,
   getCustomFoods, addCustomFood, searchUSDA,
@@ -26,6 +26,14 @@ const {
   getExercises, getActivityLogs, addActivityLog, deleteActivityLog,
   getWeightLog, addWeightLog
 } = require('../controllers/activityController')
+
+const {
+  getHydration, addHydration, deleteHydration
+} = require('../controllers/hydrationController')
+
+const {
+  getSleep, addSleep, updateSleep, deleteSleep, getSleepCalendar
+} = require('../controllers/sleepController')
 
 /**
  * @openapi
@@ -252,6 +260,7 @@ router.get('/profile', auth, getProfile)
  *         description: Помилка сервера
  */
 router.put('/profile', auth, updateProfile)
+router.patch('/profile/water-goal', auth, updateWaterGoal)
 
 /**
  * @openapi
@@ -657,5 +666,15 @@ router.delete('/activity/:id', auth, deleteActivityLog)
 
 router.get('/weight', auth, getWeightLog)
 router.post('/weight', auth, addWeightLog)
+
+router.get('/hydration/:date', auth, getHydration)
+router.post('/hydration', auth, addHydration)
+router.delete('/hydration/:id', auth, deleteHydration)
+
+router.get('/sleep/calendar', auth, getSleepCalendar)
+router.get('/sleep/:date', auth, getSleep)
+router.post('/sleep', auth, addSleep)
+router.patch('/sleep/:id', auth, updateSleep)
+router.delete('/sleep/:id', auth, deleteSleep)
 
 module.exports = router
