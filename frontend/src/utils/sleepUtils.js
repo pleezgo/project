@@ -28,15 +28,24 @@ export const formatTime = (iso) => {
 }
 
 /**
- * Повертає колір клітинки календаря на основі тривалості нічного сну.
+ * Повертає колір клітинки календаря.
+ * Якщо є оцінка якості - колір береться з неї (пріоритет суб'єктивної оцінки).
+ * Інакше - обчислюється за тривалістю нічного сну.
  */
-export const sleepDayColor = (nightMin) => {
+export const sleepDayColor = (nightMin, qualityAvg) => {
+  if (qualityAvg !== null && qualityAvg !== undefined) {
+    const q = Math.round(+qualityAvg)
+    if (q <= 2) return 'var(--red)'
+    if (q === 3) return 'var(--amber)'
+    return 'var(--green)' // 4-5
+  }
+
   if (!nightMin || nightMin === 0) return 'var(--bg-secondary)'
-  if (nightMin < 300) return 'var(--red)'      // < 5 год — критично мало
-  if (nightMin < 420) return 'var(--amber)'    // 5-7 год — недосип
-  if (nightMin <= 540) return 'var(--green)'   // 7-9 год — норма
-  if (nightMin <= 660) return 'var(--amber)'   // 9-11 год — переспав
-  return 'var(--red)'                          // > 11 год — забагато
+  if (nightMin < 300) return 'var(--red)'
+  if (nightMin < 420) return 'var(--amber)'
+  if (nightMin <= 540) return 'var(--green)'
+  if (nightMin <= 660) return 'var(--amber)'
+  return 'var(--red)'
 }
 
 /**

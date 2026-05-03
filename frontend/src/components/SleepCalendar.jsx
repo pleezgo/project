@@ -133,7 +133,7 @@ export default function SleepCalendar({ currentDate, onSelectDate }) {
           const napMin = cell.data ? +cell.data.nap_min || 0 : 0
           const bg = cell.isFuture
             ? 'var(--bg-secondary)'
-            : sleepDayColor(nightMin)
+            : sleepDayColor(nightMin, cell.data?.quality_avg)
 
           const totalHours = nightMin > 0 ? (nightMin / 60).toFixed(nightMin % 60 === 0 ? 0 : 1) : ''
 
