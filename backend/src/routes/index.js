@@ -22,7 +22,7 @@ const {
   getCustomFoods, addCustomFood, searchUSDA,
 } = require('../controllers/foodController')
 
-const { getDashboard } = require('../controllers/dashboardController')
+const { getDashboard, getDashboardMonth, getWeekSummary } = require('../controllers/dashboardController')
 const {
   getExercises, getActivityLogs, addActivityLog, deleteActivityLog,
   getWeightLog, addWeightLog
@@ -313,6 +313,8 @@ router.patch('/settings/water-quick-amounts', auth, updateWaterQuickAmounts)
  *         description: Помилка сервера
  */
 router.get('/dashboard', auth, getDashboard)
+router.get('/dashboard/month', auth, getDashboardMonth)
+router.get('/dashboard/week-summary', auth, getWeekSummary)
 
 /**
  * @openapi

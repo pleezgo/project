@@ -9,6 +9,9 @@ import WaterGoalModal from '../components/WaterGoalModal'
 const DEFAULT_QUICK_AMOUNTS = [100, 200, 250, 500]
 const MAX_CUSTOM_AMOUNTS = 4
 
+/**
+ *
+ */
 export default function Hydration() {
   const [date, setDate] = useState(today())
   const [profile, setProfile] = useState(null)

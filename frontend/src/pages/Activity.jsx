@@ -6,6 +6,9 @@ import { pct } from '../utils/nutritionUtils'
 import { calcActivityGoal } from '../utils/activityUtils'
 import DateNavigator from '../components/DateNavigator'
 
+/**
+ *
+ */
 export default function Activity() {
   const [date, setDate] = useState(today())
   const [logs, setLogs] = useState([])

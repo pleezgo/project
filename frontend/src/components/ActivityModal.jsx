@@ -2,6 +2,15 @@ import { useState } from 'react'
 import { api } from '../api/api'
 import { calcExerciseKcal, categoryLabel } from '../utils/activityUtils'
 
+/**
+ *
+ * @param root0
+ * @param root0.date
+ * @param root0.exercises
+ * @param root0.profile
+ * @param root0.onClose
+ * @param root0.onSaved
+ */
 export default function ActivityModal({ date, exercises, profile, onClose, onSaved }) {
   const [selected, setSelected] = useState(null)
   const [search, setSearch] = useState('')

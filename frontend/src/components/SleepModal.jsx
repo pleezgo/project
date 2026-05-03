@@ -152,6 +152,10 @@ export default function SleepModal({ date, editLog, onClose, onSaved }) {
 }
 
 // Допоміжні функції форматування
+/**
+ *
+ * @param d
+ */
 function toDateInput(d) {
   const y = d.getFullYear()
   const m = String(d.getMonth() + 1).padStart(2, '0')
@@ -159,6 +163,10 @@ function toDateInput(d) {
   return `${y}-${m}-${day}`
 }
 
+/**
+ *
+ * @param d
+ */
 function toTimeInput(d) {
   const h = String(d.getHours()).padStart(2, '0')
   const m = String(d.getMinutes()).padStart(2, '0')

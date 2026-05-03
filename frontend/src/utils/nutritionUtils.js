@@ -1,6 +1,7 @@
 /**
  * Розраховує цілі КБЖВ на основі calorie_goal з профілю.
  * Розподіл: 25% білки, 30% жири, 45% вуглеводи
+ * @param calorieGoal
  */
 export const calcMacroGoals = (calorieGoal = 2000) => ({
   kcal: calorieGoal,
@@ -10,15 +11,17 @@ export const calcMacroGoals = (calorieGoal = 2000) => ({
 })
 
 /**
-   * Обчислює відсоток виконання цілі в межах від 0 до 100.
-   * @param {number} value Поточне значення.
-   * @param {number} max Цільове значення.
-   * @returns {number} Відсоток виконання.
-   */
+ * Обчислює відсоток виконання цілі в межах від 0 до 100.
+ * @param {number} value Поточне значення.
+ * @param {number} max Цільове значення.
+ * @returns {number} Відсоток виконання.
+ */
 export const pct = (value, max) => Math.min(100, Math.round(value / (max || 1) * 100))
 
 /**
  * Розраховує нутрієнти для заданої кількості грамів на основі значень на 100г
+ * @param food
+ * @param amountG
  */
 export const calcNutrients = (food, amountG) => {
   const k = amountG / 100

@@ -20,6 +20,13 @@ const cellStyle = (align = 'right') => ({
   textOverflow: 'ellipsis',
 })
 
+/**
+ *
+ * @param root0
+ * @param root0.logs
+ * @param root0.onAdd
+ * @param root0.onDelete
+ */
 export default function FoodTable({ logs, onAdd, onDelete }) {
   return (
     <div style={{ border: '1px solid var(--border)', minWidth: 0 }}>

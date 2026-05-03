@@ -2,6 +2,8 @@
  * Розраховує рекомендовану ціль води (мл/день) на основі ваги і активності.
  * Формула: базова = вага * 30 + додаткова залежно від активності.
  * Результат округлюється до 50 мл для "красивих" чисел.
+ * @param weight
+ * @param activity
  */
 export const calcWaterGoal = (weight, activity) => {
   if (!weight) return 2000
@@ -25,6 +27,7 @@ export const calcWaterGoal = (weight, activity) => {
  * 0-99%    — акцентний (основний)
  * 100-150% — зелений (ціль досягнута)
  * >150%    — жовтий (попередження)
+ * @param pct
  */
 export const waterProgressColor = (pct) => {
   if (pct >= 150) return 'var(--amber)'
@@ -34,6 +37,7 @@ export const waterProgressColor = (pct) => {
 
 /**
  * Форматує час логування у короткий вигляд (HH:MM).
+ * @param iso
  */
 export const formatLogTime = (iso) => {
   if (!iso) return ''

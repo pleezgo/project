@@ -81,6 +81,8 @@ export const api = {
   updateWaterQuickAmounts: (body) => request('PATCH', '/settings/water-quick-amounts', body),
 
   getDashboard: (date) => request('GET', `/dashboard?date=${date}`),
+  getDashboardMonth: (month) => request('GET', `/dashboard/month?month=${month}`),
+  getWeekSummary: (date) => request('GET', `/dashboard/week-summary?date=${date}`),
 
   getFoodLogs: (date) => request('GET', `/food?date=${date}`),
   getFoodStats: (days) => request('GET', `/food/stats?days=${days}`),

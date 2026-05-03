@@ -1,5 +1,11 @@
 import { today, addDays, displayDateShort } from '../utils/dateUtils'
 
+/**
+ *
+ * @param root0
+ * @param root0.date
+ * @param root0.onChange
+ */
 export default function DateNavigator({ date, onChange }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', border: '1px solid var(--border)' }}>

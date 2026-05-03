@@ -7,6 +7,9 @@ const pickMET = (exercise, intensity) => {
 /**
  * Розрахунок калорій для вправи (для preview на фронті).
  * Повна логіка та сама що на бекенді.
+ * @param exercise
+ * @param params
+ * @param userWeight
  */
 export const calcExerciseKcal = (exercise, params, userWeight) => {
   const weight = userWeight || 70
@@ -66,6 +69,7 @@ export const isStrength = (category) => {
 /**
  * Розраховує рекомендовану ціль активності (ккал/день) на основі цілі користувача.
  * Базується на рекомендаціях ВООЗ: 150-300 хв помірної активності на тиждень.
+ * @param goal
  */
 export const calcActivityGoal = (goal) => {
   if (goal === 'lose') return 400

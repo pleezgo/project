@@ -1,5 +1,6 @@
 /**
  * Розраховує цільову тривалість сну на основі цілі користувача (хв/добу).
+ * @param goal
  */
 export const calcSleepGoal = (goal) => {
   if (goal === 'gain') return 510
@@ -8,6 +9,7 @@ export const calcSleepGoal = (goal) => {
 
 /**
  * Форматує тривалість у хвилинах у вигляд "X год Y хв".
+ * @param minutes
  */
 export const formatDuration = (minutes) => {
   if (!minutes || minutes <= 0) return '—'
@@ -20,6 +22,7 @@ export const formatDuration = (minutes) => {
 
 /**
  * Форматує час у форматі HH:MM з ISO-рядка.
+ * @param iso
  */
 export const formatTime = (iso) => {
   if (!iso) return ''
@@ -31,6 +34,8 @@ export const formatTime = (iso) => {
  * Повертає колір клітинки календаря.
  * Якщо є оцінка якості - колір береться з неї (пріоритет суб'єктивної оцінки).
  * Інакше - обчислюється за тривалістю нічного сну.
+ * @param nightMin
+ * @param qualityAvg
  */
 export const sleepDayColor = (nightMin, qualityAvg) => {
   if (qualityAvg !== null && qualityAvg !== undefined) {
@@ -51,6 +56,7 @@ export const sleepDayColor = (nightMin, qualityAvg) => {
 /**
  * Генерує список підказок на основі одного запису або тренду.
  * Повертає масив рядків.
+ * @param logs
  */
 export const generateInsights = (logs) => {
   const insights = []
@@ -86,6 +92,7 @@ export const generateInsights = (logs) => {
 
 /**
  * Підпис до оцінки якості сну.
+ * @param q
  */
 export const qualityLabel = (q) => {
   if (!q) return ''

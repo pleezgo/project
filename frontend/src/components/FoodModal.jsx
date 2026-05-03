@@ -14,6 +14,14 @@ const EMPTY_CUSTOM = {
   fat_per100: '', carbs_per100: '', amount: 100,
 }
 
+/**
+ *
+ * @param root0
+ * @param root0.mealId
+ * @param root0.date
+ * @param root0.onClose
+ * @param root0.onSaved
+ */
 export default function FoodModal({ mealId, date, onClose, onSaved }) {
   const [tab, setTab] = useState('search')
   const [searchQ, setSearchQ] = useState('')
