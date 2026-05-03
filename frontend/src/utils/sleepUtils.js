@@ -43,7 +43,7 @@ export const sleepDayColor = (nightMin) => {
  * Генерує список підказок на основі одного запису або тренду.
  * Повертає масив рядків.
  */
-export const generateInsights = (logs, sleepGoal) => {
+export const generateInsights = (logs) => {
   const insights = []
   if (!logs || logs.length === 0) return insights
 

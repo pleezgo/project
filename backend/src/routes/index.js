@@ -16,6 +16,7 @@ const auth = require('../middleware/auth')
 
 const { register, login } = require('../controllers/authController')
 const { getProfile, updateProfile, updateWaterGoal } = require('../controllers/profileController')
+const { updateWaterQuickAmounts } = require('../controllers/settingsController')
 const {
   getFoodLogs, getFoodStats, addFoodLog, deleteFoodLog,
   getCustomFoods, addCustomFood, searchUSDA,
@@ -261,6 +262,7 @@ router.get('/profile', auth, getProfile)
  */
 router.put('/profile', auth, updateProfile)
 router.patch('/profile/water-goal', auth, updateWaterGoal)
+router.patch('/settings/water-quick-amounts', auth, updateWaterQuickAmounts)
 
 /**
  * @openapi

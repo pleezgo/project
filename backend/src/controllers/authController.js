@@ -58,6 +58,10 @@ const register = async (req, res) => {
       'INSERT INTO user_profiles (user_id) VALUES ($1)', [user.id]
     )
 
+    await pool.query(
+      'INSERT INTO user_settings (user_id) VALUES ($1)', [user.id]
+    )
+
     const token = jwt.sign(
       { id: user.id, email: user.email },
       process.env.JWT_SECRET,

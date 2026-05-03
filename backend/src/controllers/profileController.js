@@ -27,9 +27,11 @@ const pool = require('../config/db')
 const getProfile = async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT up.*, u.email, u.name
+      `SELECT up.*, u.email, u.name,
+              COALESCE(us.preferences, '{}'::jsonb) AS preferences
        FROM user_profiles up
        JOIN users u ON u.id = up.user_id
+       LEFT JOIN user_settings us ON us.user_id = up.user_id
        WHERE up.user_id = $1`,
       [req.user.id]
     )
@@ -85,9 +87,11 @@ const updateProfile = async (req, res) => {
     }
 
     const result = await pool.query(
-      `SELECT up.*, u.email, u.name
+      `SELECT up.*, u.email, u.name,
+              COALESCE(us.preferences, '{}'::jsonb) AS preferences
        FROM user_profiles up
        JOIN users u ON u.id = up.user_id
+       LEFT JOIN user_settings us ON us.user_id = up.user_id
        WHERE up.user_id = $1`,
       [req.user.id]
     )

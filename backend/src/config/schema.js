@@ -143,6 +143,14 @@ const createTables = async () => {
       )
     `)
 
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS user_settings (
+        user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+        preferences JSONB NOT NULL DEFAULT '{}'::jsonb,
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `)
+
     await client.query('COMMIT')
   } catch(err) {
     await client.query('ROLLBACK')

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { api } from '../api/api'
 import { calcWaterGoal } from '../utils/hydrationUtils'
 
-export default function WaterGoalModal({ profile, currentGoal, onClose, onSaved }) {
+export default function WaterGoalModal({ profile, onClose, onSaved }) {
   const recommended = calcWaterGoal(profile?.weight, profile?.activity)
   const isCustom = profile?.water_goal !== null && profile?.water_goal !== undefined
 

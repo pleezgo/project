@@ -63,7 +63,7 @@ export default function Layout() {
             </NavLink>
           ))}
 
-          <div className="nav-section">Незабаром</div>
+          {/* <div className="nav-section">Незабаром</div> */}
           {disabledItems.map(item => (
             <div key={item.label} className="nav-item disabled">
               <div className="nav-dot"></div>

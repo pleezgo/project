@@ -78,6 +78,7 @@ export const api = {
   getProfile: () => request('GET', '/profile'),
   updateProfile: (body) => request('PUT', '/profile', body),
   updateWaterGoal: (body) => request('PATCH', '/profile/water-goal', body),
+  updateWaterQuickAmounts: (body) => request('PATCH', '/settings/water-quick-amounts', body),
 
   getDashboard: (date) => request('GET', `/dashboard?date=${date}`),
 

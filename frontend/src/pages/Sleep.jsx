@@ -35,7 +35,7 @@ export default function Sleep() {
   useEffect(() => { load(date) }, [date])
 
   const sleepGoal = calcSleepGoal(profile?.goal)
-  const insights = generateInsights(data.logs, sleepGoal)
+  const insights = generateInsights(data.logs)
 
   const handleDelete = async (id) => {
     try {

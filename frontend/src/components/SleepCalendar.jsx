@@ -28,11 +28,16 @@ export default function SleepCalendar({ currentDate, onSelectDate }) {
   const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`
 
   useEffect(() => {
-    setLoading(true)
+    let cancelled = false
     api.getSleepCalendar(monthStr)
-      .then(res => setDays(res.days || []))
+      .then(res => {
+        if (!cancelled) {
+          setDays(res.days || [])
+          setLoading(false)
+        }
+      })
       .catch(err => console.error(err))
-      .finally(() => setLoading(false))
+    return () => { cancelled = true }
   }, [monthStr])
 
   const goPrevMonth = () => {

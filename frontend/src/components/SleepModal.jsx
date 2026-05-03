@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { api } from '../api/api'
 import { formatDuration } from '../utils/sleepUtils'
 import StarRating from './StarRating'
