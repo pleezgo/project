@@ -55,23 +55,23 @@ const loadAll = async () => {
   }
 }
 
-  const load = async () => {
-    setLoading(true)
-    setError('')
-    try {
-      if (tab === 'users') {
-        const data = await api.getAllUsers()
-        setUsers(data)
-      } else {
-        const data = await api.getAllExercises()
-        setExercises(data)
-      }
-    } catch (e) {
-      setError(e.message || 'Помилка завантаження')
-    } finally {
-      setLoading(false)
-    }
-  }
+  // const load = async () => {
+  //   setLoading(true)
+  //   setError('')
+  //   try {
+  //     if (tab === 'users') {
+  //       const data = await api.getAllUsers()
+  //       setUsers(data)
+  //     } else {
+  //       const data = await api.getAllExercises()
+  //       setExercises(data)
+  //     }
+  //   } catch (e) {
+  //     setError(e.message || 'Помилка завантаження')
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
 
   const handleDeleteUser = async (u) => {
     if (!window.confirm(`Видалити користувача ${u.email}? Усі його записи буде видалено.`)) return
