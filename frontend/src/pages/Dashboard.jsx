@@ -1,19 +1,25 @@
 import { useState, useEffect } from 'react'
 import { api } from '../api/api'
 import { today } from '../utils/dateUtils'
+import { useNavigate } from 'react-router-dom'
 import WeekSummary from '../components/WeekSummary'
 import DashboardCalendar from '../components/DashboardCalendar'
 import DayDetails from '../components/DayDetails'
 
-/**
- *
- */
 export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState(today())
   const [profile, setProfile] = useState(null)
   const [dayData, setDayData] = useState(null)
   const [weekData, setWeekData] = useState(null)
   const [loading, setLoading] = useState(true)
+
+  const navigate = useNavigate()
+  useEffect(() => {
+    if (localStorage.getItem('justRegistered')) {
+      localStorage.removeItem('justRegistered')
+      navigate('/profile', { replace: true })
+    }
+  }, [])
 
   useEffect(() => {
     api.getProfile()

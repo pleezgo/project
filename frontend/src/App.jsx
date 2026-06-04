@@ -21,6 +21,7 @@ import Activity from './pages/Activity'
 import Hydration from './pages/Hydration'
 import Profile from './pages/Profile'
 import Sleep from './pages/Sleep'
+import Admin from './pages/Admin'
 import './styles/main.css'
 import './styles/components.css'
 
@@ -75,12 +76,14 @@ export default function App() {
           <Route path="/" element={
             <PrivateRoute><Layout /></PrivateRoute>
           }>
+            
             <Route index element={<Dashboard />} />
             <Route path="food" element={<Food />} />
             <Route path="activity" element={<Activity />} />
             <Route path="hydration" element={<Hydration />} />
             <Route path="sleep" element={<Sleep />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="admin" element={<Admin />} />
           </Route>
         </Routes>
       </BrowserRouter>

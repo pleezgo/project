@@ -12,6 +12,7 @@
  * (схуднення, підтримка ваги або набір маси).
  */
 const { calcBMR, calcTDEE, calcCalorieGoal } = require('../utils/calculations')
+const { checkRange } = require('../utils/validation')
 const pool = require('../config/db')
 
 
@@ -27,7 +28,7 @@ const pool = require('../config/db')
 const getProfile = async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT up.*, u.email, u.name,
+      `SELECT up.*, u.email, u.name, u.role,
               COALESCE(us.preferences, '{}'::jsonb) AS preferences
        FROM user_profiles up
        JOIN users u ON u.id = up.user_id
@@ -60,6 +61,10 @@ const updateProfile = async (req, res) => {
   const { age, sex, weight, height, activity, goal, activity_goal, name } = req.body
 
   try {
+    checkRange(age, 'Вік', 10, 120)
+    checkRange(weight, 'Вага', 20, 300)
+    checkRange(height, 'Зріст', 50, 250)
+    checkRange(activity_goal, 'Ціль активності', 0, 5000)
     let bmr = null, tdee = null, calorie_goal = null
     if (weight && height && age && sex) {
       bmr = calcBMR(weight, height, age, sex)
@@ -87,7 +92,7 @@ const updateProfile = async (req, res) => {
     }
 
     const result = await pool.query(
-      `SELECT up.*, u.email, u.name,
+      `SELECT up.*, u.email, u.name, u.role,
               COALESCE(us.preferences, '{}'::jsonb) AS preferences
        FROM user_profiles up
        JOIN users u ON u.id = up.user_id
@@ -107,6 +112,9 @@ const updateProfile = async (req, res) => {
 
     res.json(result.rows[0])
   } catch (err) {
+    if (err.message && err.message.match(/^(Вік|Вага|Зріст|Ціль)/)) {
+      return res.status(400).json({ error: err.message })
+    }
     console.error('Update profile error:', err)
     res.status(500).json({ error: 'Помилка сервера' })
   }

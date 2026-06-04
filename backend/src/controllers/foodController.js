@@ -15,6 +15,7 @@
 
 const pool = require('../config/db')
 const https = require('https')
+const { checkRange } = require('../utils/validation')
 
 /**
  * Повертає список записів харчування поточного користувача за обрану дату.
@@ -88,6 +89,16 @@ const addFoodLog = async (req, res) => {
 
   if(!food_name || !amount_g || !meal_type) {
     return res.status(400).json({ error: 'Назва, кількість та прийом їжі обовʼязкові' })
+  }
+  
+  try {
+    checkRange(amount_g, 'Кількість', 1, 5000)
+    checkRange(kcal, 'Калорії', 0, 99999)
+    checkRange(protein_g, 'Білки', 0, 9999)
+    checkRange(fat_g, 'Жири', 0, 9999)
+    checkRange(carbs_g, 'Вуглеводи', 0, 9999)
+  } catch (err) {
+    return res.status(400).json({ error: err.message })
   }
 
   try {
@@ -172,6 +183,20 @@ const addCustomFood = async (req, res) => {
   }
 
   try {
+    checkRange(kcal_per100, 'Ккал на 100г', 0, 9999)
+    checkRange(protein_per100, 'Білки на 100г', 0, 100)
+    checkRange(fat_per100, 'Жири на 100г', 0, 100)
+    checkRange(carbs_per100, 'Вуглеводи на 100г', 0, 100)
+
+    const sumMacros = (+protein_per100 || 0) + (+fat_per100 || 0) + (+carbs_per100 || 0)
+    if (sumMacros > 100) {
+      return res.status(400).json({ error: 'Сума білків, жирів і вуглеводів не може перевищувати 100 г на 100 г продукту' })
+    }
+  } catch (err) {
+    return res.status(400).json({ error: err.message })
+  }
+
+  try {
     const result = await pool.query(
       `INSERT INTO custom_foods
         (user_id, name, kcal_per100, protein_per100, fat_per100, carbs_per100)
@@ -222,6 +247,8 @@ const searchUSDA = async (req, res) => {
     let data = ''
     apiRes.on('data', chunk => { data += chunk })
     apiRes.on('end', () => {
+      console.log('USDA статус:', apiRes.statusCode)
+      console.log('USDA відповідь (перші 500 символів):', data.slice(0, 500))
       try {
         const json = JSON.parse(data)
         const foods = (json.foods || []).map(f => {
@@ -253,7 +280,37 @@ const searchUSDA = async (req, res) => {
   })
 }
 
+/**
+ * Видаляє власний продукт користувача.
+ *
+ * Перевіряє, що продукт належить поточному користувачу (за user_id),
+ * щоб користувач не міг видалити чужий продукт.
+ * Якщо продукт не знайдений або належить іншому користувачу,
+ * повертає 404.
+ * @param {object} req HTTP-запит з параметром id у шляху.
+ * @param {object} res HTTP-відповідь з підтвердженням або повідомленням про помилку.
+ * @returns {Promise<void>}
+ */
+const deleteCustomFood = async (req, res) => {
+  const userId = req.user.id
+  const { id } = req.params
+
+  try {
+    const result = await pool.query(
+      'DELETE FROM custom_foods WHERE id = $1 AND user_id = $2 RETURNING id',
+      [id, userId]
+    )
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Продукт не знайдено' })
+    }
+    res.json({ success: true })
+  } catch (err) {
+    console.error('Delete custom food error:', err)
+    res.status(500).json({ error: 'Помилка сервера' })
+  }
+}
+
 module.exports = {
   getFoodLogs, getFoodStats, addFoodLog, deleteFoodLog,
-  getCustomFoods, addCustomFood, searchUSDA,
+  getCustomFoods, addCustomFood, deleteCustomFood, searchUSDA,
 }

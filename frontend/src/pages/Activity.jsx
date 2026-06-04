@@ -15,6 +15,7 @@ export default function Activity() {
   const [exercises, setExercises] = useState([])
   const [profile, setProfile] = useState({})
   const [weight, setWeight] = useState('')
+  const [weightError, setWeightError] = useState('')
   const [savedWeight, setSavedWeight] = useState(null)
   const [modalType, setModalType] = useState(null)
 
@@ -62,11 +63,17 @@ export default function Activity() {
 
   const handleWeightSave = async () => {
     if (!weight) return
+    const w = +weight
+    if (!Number.isFinite(w) || w < 20 || w > 300) {
+      setWeightError('Вага має бути від 20 до 300 кг')
+      return
+    }
+    setWeightError('')
     try {
-      const w = await api.addWeightLog({ log_date: date, weight: +weight })
-      setSavedWeight(w)
+      const saved = await api.addWeightLog({ log_date: date, weight: w })
+      setSavedWeight(saved)
     } catch (err) {
-      console.error(err)
+      setWeightError(err.message || 'Помилка збереження')
     }
   }
   return (
@@ -192,11 +199,18 @@ export default function Activity() {
               onChange={e => setWeight(e.target.value)}
               placeholder="кг"
               step="0.1"
+              min="20"
+              max="300"
             />
             <button onClick={handleWeightSave} className="btn btn-primary">
               {savedWeight ? 'Оновити' : 'Зберегти'}
             </button>
           </div>
+          {weightError && (
+            <div style={{ fontSize: 12, color: 'var(--red)', marginTop: 8 }}>
+              {weightError}
+            </div>
+          )}
           {savedWeight && (
             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>
               Збережено: {savedWeight.weight} кг
@@ -217,44 +231,8 @@ export default function Activity() {
           ))}
         </div>
 
-        <div className="card" style={{ marginBottom: 0 }}>
-          <div className="card-title">Власні вправи</div>
-          <div style={{ fontSize: 12, color: 'var(--text-placeholder)', padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
-            Тут будуть ваші вправи
           </div>
-          <button disabled style={{ marginTop: 8, fontSize: 12, color: 'var(--text-placeholder)', background: 'none', border: '1px solid var(--border)', padding: '4px 10px', cursor: 'not-allowed', width: '100%' }}>
-            + додати вправу
-          </button>
-        </div>
-
-        <div className="card" style={{ marginBottom: 0 }}>
-          <div className="card-title">Набори вправ</div>
-          <div style={{ fontSize: 12, color: 'var(--text-placeholder)', padding: '8px 0', borderBottom: '1px solid var(--border-light)' }}>
-            Тут будуть ваші набори
-          </div>
-          <button disabled style={{ marginTop: 8, fontSize: 12, color: 'var(--text-placeholder)', background: 'none', border: '1px solid var(--border)', padding: '4px 10px', cursor: 'not-allowed', width: '100%' }}>
-            + створити набір
-          </button>
-        </div>
       </div>
-    </div>
-    {/* Історія за тиждень */}
-    <div className="card" style={{ marginTop: 12 }}>
-      <div className="card-title">Історія активності за тиждень</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 80px 100px', borderBottom: '1px solid var(--border-light)', paddingBottom: 6, marginBottom: 4 }}>
-        <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)' }}>Дата</span>
-        <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', textAlign: 'right' }}>Хв</span>
-        <span style={{ fontSize: 10, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text-muted)', textAlign: 'right' }}>Ккал</span>
-      </div>
-      {['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'].map(day => (
-        <div key={day} style={{ display: 'grid', gridTemplateColumns: '1fr 80px 100px', padding: '5px 0', borderBottom: '1px solid var(--border-light)' }}>
-          <span style={{ fontSize: 12, color: 'var(--text-placeholder)' }}>{day}</span>
-          <span style={{ fontSize: 12, color: 'var(--text-placeholder)', textAlign: 'right' }}>—</span>
-          <span style={{ fontSize: 12, color: 'var(--text-placeholder)', textAlign: 'right' }}>—</span>
-        </div>
-      ))}
-      <div style={{ fontSize: 11, color: 'var(--text-placeholder)', marginTop: 8, textAlign: 'right' }}>незабаром</div>
-    </div>
     {modalType && (
       <ActivityModal
         date={date}

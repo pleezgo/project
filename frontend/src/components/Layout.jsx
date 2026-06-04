@@ -80,6 +80,19 @@ export default function Layout() {
             <div className="nav-dot"></div>
             Профіль
           </NavLink>
+          
+          {user?.role === 'admin' && (
+            <>
+              <div className="nav-section">Адміністрування</div>
+              <NavLink
+                to="/admin"
+                className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+              >
+                <div className="nav-dot"></div>
+                Адмін-панель
+              </NavLink>
+            </>
+          )}
         </nav>
 
         <div className="sidebar-footer">

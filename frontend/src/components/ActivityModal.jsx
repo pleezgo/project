@@ -42,6 +42,35 @@ export default function ActivityModal({ date, exercises, profile, onClose, onSav
   const handleAdd = async () => {
     if (!selected) { setError('Оберіть вправу'); return }
 
+    const dur = +duration || 0
+    const dist = +distance || 0
+    const setsNum = +sets || 0
+    const repsNum = +reps || 0
+    const weight = +weightUsed || 0
+
+    if (selected.supports_duration && (dur <= 0 || dur > 1440)) {
+      setError('Тривалість має бути від 1 до 1440 хв')
+      return
+    }
+    if (selected.supports_distance && (dist <= 0 || dist > 500)) {
+      setError('Дистанція має бути від 0 до 500 км')
+      return
+    }
+    if (selected.supports_sets_reps) {
+      if (setsNum <= 0 || setsNum > 100) {
+        setError('Кількість підходів має бути від 1 до 100')
+        return
+      }
+      if (repsNum <= 0 || repsNum > 1000) {
+        setError('Кількість повторень має бути від 1 до 1000')
+        return
+      }
+    }
+    if (selected.supports_weight && (weight < 0 || weight > 500)) {
+      setError('Вага навантаження має бути від 0 до 500 кг')
+      return
+    }
+
     setLoading(true)
     setError('')
     try {

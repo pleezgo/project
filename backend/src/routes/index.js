@@ -13,13 +13,14 @@
 const express = require('express')
 const router = express.Router()
 const auth = require('../middleware/auth')
+const { requireAdmin } = require('../middleware/auth')
 
-const { register, login } = require('../controllers/authController')
+const { register, login, changePassword } = require('../controllers/authController')
 const { getProfile, updateProfile, updateWaterGoal } = require('../controllers/profileController')
 const { updateWaterQuickAmounts } = require('../controllers/settingsController')
-const {
+const { 
   getFoodLogs, getFoodStats, addFoodLog, deleteFoodLog,
-  getCustomFoods, addCustomFood, searchUSDA,
+  getCustomFoods, addCustomFood, deleteCustomFood, searchUSDA 
 } = require('../controllers/foodController')
 
 const { getDashboard, getDashboardMonth, getWeekSummary } = require('../controllers/dashboardController')
@@ -35,6 +36,11 @@ const {
 const {
   getSleep, addSleep, updateSleep, deleteSleep, getSleepCalendar
 } = require('../controllers/sleepController')
+
+const {
+  getAllUsers, deleteUser, resetUserPassword,
+  getAllExercises, addExercise, deleteExercise,
+} = require('../controllers/adminController')
 
 /**
  * @openapi
@@ -155,6 +161,7 @@ router.post('/auth/register', register)
  *         description: Помилка сервера
  */
 router.post('/auth/login', login)
+router.put('/auth/password', auth, changePassword)
 
 /**
  * @openapi
@@ -632,6 +639,8 @@ router.post('/food', auth, addFoodLog)
  *         description: Помилка сервера
  */
 router.post('/food/custom', auth, addCustomFood)
+router.post('/food/custom', auth, addCustomFood)
+router.delete('/food/custom/:id', auth, deleteCustomFood)
 
 /**
  * @openapi
@@ -680,5 +689,13 @@ router.get('/sleep/:date', auth, getSleep)
 router.post('/sleep', auth, addSleep)
 router.patch('/sleep/:id', auth, updateSleep)
 router.delete('/sleep/:id', auth, deleteSleep)
+
+//Адміністрування
+router.get('/admin/users', auth, requireAdmin, getAllUsers)
+router.delete('/admin/users/:id', auth, requireAdmin, deleteUser)
+router.post('/admin/users/:id/reset-password', auth, requireAdmin, resetUserPassword)
+router.get('/admin/exercises', auth, requireAdmin, getAllExercises)
+router.post('/admin/exercises', auth, requireAdmin, addExercise)
+router.delete('/admin/exercises/:id', auth, requireAdmin, deleteExercise)
 
 module.exports = router

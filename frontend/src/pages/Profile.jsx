@@ -45,6 +45,9 @@ export default function Profile() {
   const [profile, setProfile] = useState(null)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+  const [pwdForm, setPwdForm] = useState({ current: '', next: '', confirm: '' })
+  const [pwdError, setPwdError] = useState('')
+  const [pwdSaved, setPwdSaved] = useState(false)
 
   useEffect(() => {
     api.getProfile()
@@ -80,13 +83,35 @@ export default function Profile() {
       return
     }
 
+    const age = +form.age
+    const weight = +form.weight
+    const height = +form.height
+    const activityGoal = form.activity_goal === '' ? null : +form.activity_goal
+
+    if (!Number.isFinite(age) || age < 10 || age > 120) {
+      setError('Вік має бути від 10 до 120 років')
+      return
+    }
+    if (!Number.isFinite(weight) || weight < 20 || weight > 300) {
+      setError('Вага має бути від 20 до 300 кг')
+      return
+    }
+    if (!Number.isFinite(height) || height < 50 || height > 250) {
+      setError('Зріст має бути від 50 до 250 см')
+      return
+    }
+    if (activityGoal !== null && (!Number.isFinite(activityGoal) || activityGoal < 0 || activityGoal > 5000)) {
+      setError('Ціль активності має бути від 0 до 5000 ккал')
+      return
+    }
+
     try {
       const p = await api.updateProfile({
         ...form,
-        age: +form.age,
-        weight: +form.weight,
-        height: +form.height,
-        activity_goal: form.activity_goal === '' ? null : +form.activity_goal,
+        age,
+        weight,
+        height,
+        activity_goal: activityGoal,
       })
 
       setProfile(p)
@@ -94,6 +119,40 @@ export default function Profile() {
       setTimeout(() => setSaved(false), 2000)
     } catch(err) {
       setError(err.message)
+    }
+  }
+
+  const changePwd = async () => {
+    setPwdError('')
+    setPwdSaved(false)
+
+    if (!pwdForm.current || !pwdForm.next || !pwdForm.confirm) {
+      setPwdError('Заповніть усі поля')
+      return
+    }
+    if (pwdForm.next.length < 6) {
+      setPwdError('Новий пароль має містити мінімум 6 символів')
+      return
+    }
+    if (pwdForm.next !== pwdForm.confirm) {
+      setPwdError('Новий пароль і підтвердження не співпадають')
+      return
+    }
+    if (pwdForm.current === pwdForm.next) {
+      setPwdError('Новий пароль має відрізнятися від поточного')
+      return
+    }
+
+    try {
+      await api.changePassword({
+        current_password: pwdForm.current,
+        new_password: pwdForm.next,
+      })
+      setPwdForm({ current: '', next: '', confirm: '' })
+      setPwdSaved(true)
+      setTimeout(() => setPwdSaved(false), 3000)
+    } catch (e) {
+      setPwdError(e.message || 'Помилка зміни пароля')
     }
   }
 
@@ -160,12 +219,12 @@ export default function Profile() {
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Вага (кг)</label>
-              <input type="number" className="form-input" {...f('weight')} placeholder="70" step="0.5" />
+              <input type="number" className="form-input" {...f('weight')} placeholder="70" step="0.5" min="20" max="300" />
             </div>
 
             <div className="form-group">
               <label className="form-label">Зріст (см)</label>
-              <input type="number" className="form-input" {...f('height')} placeholder="175" />
+              <input type="number" className="form-input" {...f('height')} placeholder="175" min="50" max="250" />
             </div>
           </div>
 
@@ -273,6 +332,61 @@ export default function Profile() {
             </div>
           )}
         </div>
+      </div>
+      <div className="card" style={{ marginTop: 20 }}>
+        <div className="card-title">Зміна пароля</div>
+
+        <div className="form-group">
+          <label className="form-label">Поточний пароль</label>
+          <input
+            type="password"
+            className="form-input"
+            value={pwdForm.current}
+            onChange={e => setPwdForm(f => ({ ...f, current: e.target.value }))}
+            autoComplete="current-password"
+          />
+        </div>
+
+        <div className="form-row">
+          <div className="form-group">
+            <label className="form-label">Новий пароль</label>
+            <input
+              type="password"
+              className="form-input"
+              value={pwdForm.next}
+              onChange={e => setPwdForm(f => ({ ...f, next: e.target.value }))}
+              autoComplete="new-password"
+              minLength={6}
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Підтвердження</label>
+            <input
+              type="password"
+              className="form-input"
+              value={pwdForm.confirm}
+              onChange={e => setPwdForm(f => ({ ...f, confirm: e.target.value }))}
+              autoComplete="new-password"
+              minLength={6}
+            />
+          </div>
+        </div>
+
+        {pwdError && (
+          <div style={{ fontSize: 12, color: 'var(--red)', marginBottom: 12 }}>
+            {pwdError}
+          </div>
+        )}
+
+        {pwdSaved && (
+          <div style={{ fontSize: 12, color: 'var(--green)', marginBottom: 12 }}>
+            Пароль успішно змінено
+          </div>
+        )}
+
+        <button onClick={changePwd} className="btn btn-primary">
+          Змінити пароль
+        </button>
       </div>
     </div>
   )

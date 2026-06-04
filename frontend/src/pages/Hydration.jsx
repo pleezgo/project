@@ -80,6 +80,7 @@ export default function Hydration() {
   setEditAmounts([...customAmounts])
   setNewAmount('')
   setEditError('')
+  setError('')
   setEditMode(true)
 }
 
@@ -93,6 +94,7 @@ const saveEdit = async () => {
   const same = editAmounts.length === customAmounts.length
     && editAmounts.every((v, i) => v === customAmounts[i])
   if (same) {
+    setEditError('')
     setEditMode(false)
     return
   }
@@ -100,6 +102,7 @@ const saveEdit = async () => {
     await api.updateWaterQuickAmounts({ water_quick_amounts: editAmounts })
     const p = await api.getProfile()
     setProfile(p)
+    setEditError('')
     setEditMode(false)
   } catch (e) {
     setEditError(e.message || 'Помилка збереження')

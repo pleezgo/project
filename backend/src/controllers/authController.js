@@ -48,7 +48,7 @@ const register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10)
 
     const result = await pool.query(
-      'INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING id, email, name',
+      'INSERT INTO users (email, password, name) VALUES ($1, $2, $3) RETURNING id, email, name, role',
       [email, hashedPassword, name || null]
     )
 
@@ -63,7 +63,7 @@ const register = async (req, res) => {
     )
 
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, role: user.role},
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     )
@@ -109,14 +109,14 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, role: user.role  },
       process.env.JWT_SECRET,
       {expiresIn: '7d'}
     )
 
     res.json({
       token,
-      user: { id: user.id, email: user.email, name: user.name }
+      user: { id: user.id, email: user.email, name: user.name, role: user.role  }
     })
   } catch (err) {
     console.error('Login error:', err)
@@ -124,4 +124,54 @@ const login = async (req, res) => {
   }
 }
 
-module.exports = { register, login }
+/**
+ * Змінює пароль поточного користувача.
+ *
+ * Перевіряє знання поточного пароля через bcrypt.compare,
+ * валідує мінімальну довжину нового пароля та оновлює хеш у БД.
+ * Функція доступна тільки автентифікованому користувачу
+ * (захист через authMiddleware на рівні маршруту).
+ * @param {object} req HTTP-запит з current_password і new_password у тілі запиту.
+ * @param {object} res HTTP-відповідь з підтвердженням або повідомленням про помилку.
+ * @returns {Promise<void>}
+ */
+const changePassword = async (req, res) => {
+  const { current_password, new_password } = req.body
+
+  if (!current_password || !new_password) {
+    return res.status(400).json({ error: 'Поточний та новий пароль обовʼязкові' })
+  }
+
+  if (new_password.length < 6) {
+    return res.status(400).json({ error: 'Новий пароль має містити мінімум 6 символів' })
+  }
+
+  try {
+    const result = await pool.query(
+      'SELECT password FROM users WHERE id = $1',
+      [req.user.id]
+    )
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Користувача не знайдено' })
+    }
+
+    const valid = await bcrypt.compare(current_password, result.rows[0].password)
+    if (!valid) {
+      return res.status(401).json({ error: 'Невірний поточний пароль' })
+    }
+
+    const hashedNew = await bcrypt.hash(new_password, 10)
+    await pool.query(
+      'UPDATE users SET password = $1 WHERE id = $2',
+      [hashedNew, req.user.id]
+    )
+
+    res.json({ success: true })
+  } catch (err) {
+    console.error('Change password error:', err)
+    res.status(500).json({ error: 'Помилка сервера' })
+  }
+}
+
+module.exports = { register, login, changePassword }

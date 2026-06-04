@@ -27,4 +27,23 @@ const authMiddleware = (req, res, next) => {
   }
 }
 
+/**
+ * Перевіряє, що поточний користувач має роль адміністратора.
+ *
+ * Використовується після authMiddleware, який вже додав
+ * req.user з даними з JWT-токена (включно з полем role).
+ * Якщо роль не дорівнює 'admin', повертає 403.
+ * @param {object} req HTTP-запит з даними автентифікованого користувача.
+ * @param {object} res HTTP-відповідь з помилкою у разі недостатніх прав.
+ * @param {Function} next Функція передачі керування наступному middleware.
+ * @returns {void}
+ */
+const requireAdmin = (req, res, next) => {
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json({ error: 'Доступ заборонено' })
+  }
+  next()
+}
+
 module.exports = authMiddleware
+module.exports.requireAdmin = requireAdmin

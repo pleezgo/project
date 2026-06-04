@@ -59,6 +59,15 @@ const request = async (method, path, body = null) => {
   if(body) options.body = JSON.stringify(body)
 
   const res = await fetch(`${BASE_URL}${path}`, options)
+
+  const isAuthRoute = path.startsWith('/auth/')
+  if (!isAuthRoute && (res.status === 401 || res.status === 403)) {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    window.location.href = '/login'
+    throw new Error('Сесія минула')
+  }
+
   const data = await res.json()
 
   if (!res.ok) throw new Error(data.error || 'Помилка запиту')
@@ -74,6 +83,7 @@ const request = async (method, path, body = null) => {
 export const api = {
   register: (body) => request('POST', '/auth/register', body),
   login: (body) => request('POST', '/auth/login', body),
+  changePassword: (body) => request('PUT', '/auth/password', body),
 
   getProfile: () => request('GET', '/profile'),
   updateProfile: (body) => request('PUT', '/profile', body),
@@ -90,6 +100,7 @@ export const api = {
   getCustomFoods: () => request('GET', '/food/custom'),
   addFoodLog: (body) => request('POST', '/food', body),
   addCustomFood: (body) => request('POST', '/food/custom', body),
+  deleteCustomFood: (id) => request('DELETE', `/food/custom/${id}`),
   deleteFoodLog: (id) => request('DELETE', `/food/${id}`),
 
   getExercises: () => request('GET', '/exercises'),
@@ -110,4 +121,11 @@ export const api = {
   updateSleep: (id, body) => request('PATCH', `/sleep/${id}`, body),
   deleteSleep: (id) => request('DELETE', `/sleep/${id}`),
   getSleepCalendar: (month) => request('GET', `/sleep/calendar?month=${month}`),
+
+  getAllUsers: () => request('GET', '/admin/users'),
+  deleteUser: (id) => request('DELETE', `/admin/users/${id}`),
+  resetUserPassword: (id) => request('POST', `/admin/users/${id}/reset-password`),
+  getAllExercises: () => request('GET', '/admin/exercises'),
+  addExercise: (body) => request('POST', '/admin/exercises', body),
+  deleteExercise: (id) => request('DELETE', `/admin/exercises/${id}`),
 }

@@ -21,6 +21,12 @@ const calcCalorieGoal = (tdee, goal) => {
   return tdee
 }
 
+const calcActivityGoal = (goal) => {
+  if (goal === 'lose') return 400
+  if (goal === 'gain') return 200
+  return 300
+}
+
 /**
  * Вибирає MET значення вправи для заданої інтенсивності.
  * Якщо для рівня немає значення — fallback на moderate.
@@ -77,12 +83,6 @@ const calcExerciseKcal = (exercise, params, userWeight) => {
   }
 
   return 0
-}
-
-const calcActivityGoal = (goal) => {
-  if (goal === 'lose') return 400
-  if (goal === 'gain') return 200
-  return 300
 }
 
 module.exports = { activityFactors, calcBMR, calcTDEE, calcCalorieGoal, pickMET, calcExerciseKcal, calcActivityGoal }

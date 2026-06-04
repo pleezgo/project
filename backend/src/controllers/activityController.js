@@ -1,5 +1,6 @@
 const pool = require('../config/db')
 const { calcBMR, calcTDEE, calcCalorieGoal, calcExerciseKcal } = require('../utils/calculations')
+const { checkRange } = require('../utils/validation')
 
 const getExercises = async (req, res) => {
   try {
@@ -35,6 +36,16 @@ const addActivityLog = async (req, res) => {
 
   if (!exercise_id) {
     return res.status(400).json({ error: 'Вправа обовʼязкова' })
+  }
+
+  try {
+    checkRange(duration_min, 'Тривалість', 1, 1440)
+    checkRange(distance_km, 'Дистанція', 0, 500)
+    checkRange(sets, 'Підходи', 1, 100)
+    checkRange(reps, 'Повторення', 1, 1000)
+    checkRange(weight_used_kg, 'Вага навантаження', 0, 500)
+  } catch (err) {
+    return res.status(400).json({ error: err.message })
   }
 
   try {
@@ -133,6 +144,12 @@ const addWeightLog = async (req, res) => {
 
   if (!weight) {
     return res.status(400).json({ error: 'Вага обовʼязкова' })
+  }
+
+  try {
+    checkRange(weight, 'Вага', 20, 300)
+  } catch (err) {
+    return res.status(400).json({ error: err.message })
   }
 
   try {

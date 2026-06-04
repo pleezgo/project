@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { api } from '../api/api'
 import { calcNutrients } from '../utils/nutritionUtils'
 
@@ -31,7 +31,17 @@ export default function FoodModal({ mealId, date, onClose, onSaved }) {
   const [customForm, setCustomForm] = useState(EMPTY_CUSTOM)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [savedFoods, setSavedFoods] = useState([])
+  const [selectedSavedId, setSelectedSavedId] = useState('')
   const searchTimer = useRef(null)
+
+useEffect(() => {
+  if (tab === 'custom') {
+    api.getCustomFoods()
+      .then(setSavedFoods)
+      .catch(() => setSavedFoods([]))
+  }
+}, [tab])
 
   const mealLabel = MEALS.find(m => m.id === mealId)?.label
 
@@ -53,16 +63,21 @@ export default function FoodModal({ mealId, date, onClose, onSaved }) {
   }
 
   const addSelected = async () => {
-    if (!selectedFood || amount <= 0) return
+    if (!selectedFood) return
+    const amt = +amount
+    if (!Number.isFinite(amt) || amt <= 0 || amt > 5000) {
+      setError('Кількість має бути від 1 до 5000 г')
+      return
+    }
     setLoading(true)
     setError('')
     try {
-      const nutrients = calcNutrients(selectedFood, amount)
+      const nutrients = calcNutrients(selectedFood, amt)
       await api.addFoodLog({
         log_date: date,
         meal_type: mealId,
         food_name: selectedFood.name,
-        amount_g: amount,
+        amount_g: amt,
         ...nutrients,
         usda_fdc_id: selectedFood.fdcId ? String(selectedFood.fdcId) : null,
       })
@@ -80,24 +95,57 @@ export default function FoodModal({ mealId, date, onClose, onSaved }) {
       setError('Назва та калорії обовʼязкові')
       return
     }
+    const kcal = +kcal_per100
+    const protein = +(protein_per100 || 0)
+    const fat = +(fat_per100 || 0)
+    const carbs = +(carbs_per100 || 0)
+    const amount = +amt || 100
+
+    if (!Number.isFinite(kcal) || kcal < 0 || kcal > 9999) {
+      setError('Ккал на 100г має бути від 0 до 9999')
+      return
+    }
+    if (protein < 0 || protein > 100) {
+      setError('Білки на 100г мають бути від 0 до 100')
+      return
+    }
+    if (fat < 0 || fat > 100) {
+      setError('Жири на 100г мають бути від 0 до 100')
+      return
+    }
+    if (carbs < 0 || carbs > 100) {
+      setError('Вуглеводи на 100г мають бути від 0 до 100')
+      return
+    }
+    if (protein + fat + carbs > 100) {
+      setError('Сума білків, жирів і вуглеводів не може перевищувати 100 г на 100 г продукту')
+      return
+    }
+    if (amount <= 0 || amount > 5000) {
+      setError('Кількість має бути від 1 до 5000 г')
+      return
+    }
+
     setLoading(true)
     setError('')
     try {
       const food = {
-        kcal_per100: +kcal_per100,
-        protein_per100: +(protein_per100 || 0),
-        fat_per100: +(fat_per100 || 0),
-        carbs_per100: +(carbs_per100 || 0),
+        kcal_per100: kcal,
+        protein_per100: protein,
+        fat_per100: fat,
+        carbs_per100: carbs,
       }
-      const nutrients = calcNutrients(food, amt || 100)
+      const nutrients = calcNutrients(food, amount)
       await api.addFoodLog({
         log_date: date,
         meal_type: mealId,
         food_name: name.trim(),
-        amount_g: amt || 100,
+        amount_g: amount,
         ...nutrients,
       })
-      await api.addCustomFood({ name: name.trim(), ...food })
+      if (!selectedSavedId) {
+        await api.addCustomFood({ name: name.trim(), ...food })
+      }
       onSaved()
     } catch (e) {
       setError(e.message || 'Помилка збереження')
@@ -231,6 +279,73 @@ export default function FoodModal({ mealId, date, onClose, onSaved }) {
 
           {tab === 'custom' && (
             <div>
+              {savedFoods.length > 0 && (
+                <div className="form-group">
+                  <label className="form-label">Збережені продукти</label>
+                  <div style={{ maxHeight: 180, overflowY: 'auto', border: '1px solid var(--border)' }}>
+                    {savedFoods.map(f => {
+                      const isSelected = String(f.id) === selectedSavedId
+                      return (
+                        <div
+                          key={f.id}
+                          style={{
+                            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                            padding: '8px 10px',
+                            borderBottom: '1px solid var(--border-light)',
+                            background: isSelected ? 'var(--bg-secondary)' : 'transparent',
+                            cursor: 'pointer',
+                          }}
+                          onClick={() => {
+                            if (isSelected) {
+                              setSelectedSavedId('')
+                              setCustomForm(EMPTY_CUSTOM)
+                            } else {
+                              setSelectedSavedId(String(f.id))
+                              setCustomForm({
+                                name: f.name,
+                                kcal_per100: f.kcal_per100,
+                                protein_per100: f.protein_per100,
+                                fat_per100: f.fat_per100,
+                                carbs_per100: f.carbs_per100,
+                                amount: 100,
+                              })
+                            }
+                          }}
+                        >
+                          <div style={{ fontSize: 13 }}>
+                            <div>{f.name}</div>
+                            <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                              {f.kcal_per100} ккал/100г
+                            </div>
+                          </div>
+                          <button
+                            onClick={async (e) => {
+                              e.stopPropagation()
+                              if (!window.confirm(`Видалити "${f.name}" зі збережених?`)) return
+                              try {
+                                await api.deleteCustomFood(f.id)
+                                setSavedFoods(prev => prev.filter(item => item.id !== f.id))
+                                if (isSelected) {
+                                  setSelectedSavedId('')
+                                  setCustomForm(EMPTY_CUSTOM)
+                                }
+                              } catch (err) {
+                                setError(err.message || 'Помилка видалення')
+                              }
+                            }}
+                            style={{
+                              background: 'none', border: 'none', cursor: 'pointer',
+                              fontSize: 16, color: 'var(--text-muted)', padding: '0 6px',
+                            }}
+                            title="Видалити"
+                          >✕</button>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
               <div className="form-group">
                 <label className="form-label">Назва</label>
                 <input
@@ -247,7 +362,7 @@ export default function FoodModal({ mealId, date, onClose, onSaved }) {
                   <input type="number" className="form-input"
                     value={customForm.kcal_per100}
                     onChange={e => setCustomForm(f => ({ ...f, kcal_per100: e.target.value }))}
-                    placeholder="200" />
+                    placeholder="200" min="0" max="9999" />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Кількість (г)</label>
@@ -257,7 +372,7 @@ export default function FoodModal({ mealId, date, onClose, onSaved }) {
                           const val = e.target.value
                           setCustomForm(f => ({...f, amount: val === '' ? '' : +val}))
                         }}
-                    placeholder="200" />
+                    placeholder="200" min="1" max="5000" />
                 </div>
               </div>
 
@@ -267,14 +382,14 @@ export default function FoodModal({ mealId, date, onClose, onSaved }) {
                   <input type="number" className="form-input"
                     value={customForm.protein_per100}
                     onChange={e => setCustomForm(f => ({ ...f, protein_per100: e.target.value }))}
-                    placeholder="10" />
+                    placeholder="10" min="0" max="100" />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Жири / 100г</label>
                   <input type="number" className="form-input"
                     value={customForm.fat_per100}
                     onChange={e => setCustomForm(f => ({ ...f, fat_per100: e.target.value }))}
-                    placeholder="5" />
+                    placeholder="5" min="0" max="100" />
                 </div>
               </div>
 
@@ -283,7 +398,7 @@ export default function FoodModal({ mealId, date, onClose, onSaved }) {
                 <input type="number" className="form-input"
                   value={customForm.carbs_per100}
                   onChange={e => setCustomForm(f => ({ ...f, carbs_per100: e.target.value }))}
-                  placeholder="30" />
+                  placeholder="30" min="0" max="100" />
               </div>
 
               <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>

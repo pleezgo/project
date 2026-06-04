@@ -38,6 +38,7 @@ export default function Register() {
       const data = await api.register({name, email, password})
 
       login(data.user, data.token)
+      localStorage.setItem('justRegistered', '1')
       navigate('/')
     } catch(err) {
       console.error('register error', err)
@@ -67,7 +68,7 @@ export default function Register() {
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
-              placeholder="Іван Петренко"
+              placeholder="Захар Соляр"
             />
           </div>
 
